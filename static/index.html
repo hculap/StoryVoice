@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>StoryVoice - Magical Bedtime Stories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS Variables */
+          :root {
+            --peach: #FFB5A7;
+            --lavender: #D4C1EC;
+            --mint: #B8E0D2;
+            --soft-yellow: #FAE8B0;
+            --header-height: 4rem; /* 64px */
+        }
+
+        /* Apply variables to Tailwind classes */
+        .bg-peach { background-color: var(--peach); }
+        .bg-lavender { background-color: var(--lavender); }
+        .bg-mint { background-color: var(--mint); }
+        .bg-soft-yellow { background-color: var(--soft-yellow); }
+        
+        .text-peach { color: var(--peach); }
+        .text-lavender { color: var(--lavender); }
+        .text-mint { color: var(--mint); }
+        .text-soft-yellow { color: var(--soft-yellow); }
+
+        /* Rest of your styles */
+        body {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .splash-screen {
+            background: linear-gradient(135deg, var(--lavender) 0%, var(--mint) 100%);
+        }
+
+        .logo-font {
+            font-family: 'Comfortaa', cursive;
+        }
+
+        .screen {
+            padding-top: var(--header-height);
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .screen.active-screen {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .recording {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #readingPrompt {
+            scrollbar-width: thin;
+            scrollbar-color: var(--lavender) transparent;
+        }
+
+        #readingPrompt p {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        #readingPrompt::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #readingPrompt::-webkit-scrollbar-thumb {
+            background-color: var(--lavender);
+            border-radius: 8px;
+        }
+
+        #readingPrompt::-webkit-scrollbar-track {
+            background: var(--mint);
+            border-radius: 8px;
+        }
+        /* Audio Controls Styles */
+        #audioControls {
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            height: 8rem; /* 96px */
+            position: fixed;
+            bottom: -8rem; /* Start hidden */
+            left: 0;
+            right: 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #activeControls {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding-top: 1.5rem;
+            display: block; /* Always maintain layout */
+        }
+
+        #audioControls.active #activeControls {
+            opacity: 1;
+        }
+
+        #audioControls.active #emptyState {
+            display: none;
+        }
+        
+
+        #emptyState {
+            display: flex;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        #synthesisScreen.active-screen #audioControls {
+            transform: translateY(-8rem); /* Move up by its height */
+        }
+
+
+        #progress {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+
+        #progress::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--lavender);
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        #progress::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--lavender);
+            border-radius: 50%;
+            border: none;
+            transition: transform 0.2s;
+        }
+
+        #progress::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #progress::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #statusToast {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+        .toast-show {
+            animation: toastSlideIn 0.3s ease-out forwards;
+        }
+
+        .toast-hide {
+            animation: toastSlideOut 0.3s ease-in forwards;
+        }
+
+        .toast-info {
+            border-color: var(--lavender);
+            background: linear-gradient(135deg, rgba(212, 193, 236, 1) 0%, rgba(255, 255, 255, 1) 90%);
+        }
+
+        .toast-success {
+            border-color: var(--mint);
+            background: linear-gradient(135deg, rgba(184, 224, 210, 1) 0%, rgba(255, 255, 255, 1) 90%);
+        }
+
+        .toast-error {
+            border-color: var(--peach);
+            background: linear-gradient(135deg, rgba(255, 181, 167, 1) 0%, rgba(255, 255, 255, 1) 90%);
+        }
+
+        @keyframes toastSlideIn {
+            0% { opacity: 0; transform: translateY(-40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toastSlideOut {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+
+        .story-item {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .story-item.selected {
+            border-color: var(--peach);
+            background-color: rgba(255, 181, 167, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 181, 167, 0.1);
+            z-index: 10;
+            position: relative;
+        }
+
+        .screen {
+            padding-top: var(--header-height);
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Ensure header stays on top of content */
+        .sticky-header {
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        #confirmModal {
+            backdrop-filter: blur(4px);
+        }
+
+        /* Scrollbar styling to match audio controls */
+        #clonePromptModal ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #clonePromptModal ::-webkit-scrollbar-thumb {
+            background-color: var(--lavender);
+            border-radius: 8px;
+        }
+
+        #clonePromptModal ::-webkit-scrollbar-track {
+            background: var(--mint);
+            border-radius: 8px;
+        }
+
+        /* Animation for modal entrance */
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #clonePromptModal[data-visible="true"] {
+            display: flex;
+            max-height: 100vh;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        #recordingContent {
+            height: 90vh; 
+        }
+
+        .scrolling-container {
+            height: 80vh;
+            overflow: hidden;
+            mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                black 10%, 
+                black 90%, 
+                transparent 100%
+            );
+        }
+
+        .scrolling-text {
+            animation: autoScroll 60s linear infinite;
+            transform: translateY(100%);
+        }
+
+        @keyframes autoScroll {
+            0% { transform: translateY(30%); }
+            100% { transform: translateY(-100%); }
+        }
+
+        .clonePromptModal[data-visible="true"] .scrolling-text {
+            animation-play-state: running;
+        }
+
+        .clonePromptModal:not([data-visible="true"]) .scrolling-text {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F9FD] min-h-screen">
+    <!-- Status Toasts Container -->
+    <div id="toastContainer" class="fixed top-[calc(var(--header-height)+1rem)] left-1/2 -translate-x-1/2 z-[450] w-full max-w-md px-4 space-y-2 pointer-events-none">
+        <div id="statusToast" class="hidden opacity-0 translate-y-[-20px] transition-all duration-300 ease-out rounded-lg shadow-xl p-4 flex items-start gap-3 border-l-4 border-[#FFB5A7] bg-white/95 backdrop-blur-sm">
+            <div class="mt-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="flex-1 text-sm"></div>
+        </div>
+    </div>
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="splash-screen fixed inset-0 flex flex-col items-center justify-center z-50">
+        <div class="animate-bounce">
+            <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+            </svg>
+        </div>
+        <h1 class="logo-font text-4xl font-bold text-white mt-4">StoryVoice</h1>
+        <p class="text-white/90 mt-2">Where bedtime stories come alive</p>
+    </div>
+
+    <!-- Main App -->
+    <div class="container mx-auto px-4 pb-16 max-w-md" style="display: none;" id="appContainer">
+        <div class="sticky-header fixed top-0 left-0 right-0 bg-white z-[500]">
+            <div class="container mx-auto px-4 max-w-md">
+                <div class="flex items-center justify-between h-[var(--header-height)]">
+                    <!-- Left Side (Back Button) -->
+                    <div class="flex-grow flex items-center basis-0 justify-start">
+                        <button id="headerBackButton" onclick="showCloneScreen()" 
+                                class="hidden items-center gap-2 text-peach hover:text-peach/80 transition-colors">
+                            
+                            <span>Re-Clone</span>
+                        </button>
+                    </div>
+        
+                    <!-- Center Title -->
+                    <h1 class="text-xl font-bold text-gray-800 logo-font flex-shrink-0 px-4">
+                        StoryVoice
+                    </h1>
+        
+                    <!-- Right Side (Avatar) -->
+                    <div class="flex-grow flex items-center basis-0 justify-end">
+                        <div class="w-8 h-8 rounded-full bg-[var(--lavender)] flex items-center justify-center 
+                                  text-white text-sm font-medium">
+                            U
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Voice Cloning Screen -->
+        <div id="cloneScreen" class="screen">
+            <div class="bg-white rounded-2xl shadow-sm p-4 my-4">
+                <div class="flex items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-800 logo-font">Create Your Voiceprint</h1>
+                </div>
+                
+                <div class="space-y-5">
+                    <div class="text-center p-6 bg-peach/10 rounded-xl">
+                        <div class="text-4xl mb-4">👩👧</div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">Record Your Voice</h3>
+                        <p class="text-sm text-gray-500 mb-4">Read your child's favorite story aloud</p>
+                        <button onclick="startRecording()" 
+                                class="record-button w-full bg-peach hover:bg-peach/90 text-white px-6 py-4 rounded-xl 
+                                       font-medium text-lg transition-all">
+                            Start Recording
+                        </button>
+                    </div>
+
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div class="relative flex justify-center">
+                            <span class="bg-white px-2 text-sm text-gray-400">or</span>
+                        </div>
+                    </div>
+
+                    <!-- Replace the existing file input section with this -->
+                    <div class="space-y-4 p-6">
+                        <button id="uploadButton" 
+                                class="w-full bg-lavender hover:bg-peach/90 text-white px-6 py-4 rounded-xl 
+                                font-medium text-lg transition-all">
+                            <span>Upload Voice Sample</span>
+                            <input type="file" id="audioFile" accept=".mp3,.wav" class="hidden" />
+                        </button>
+                    </div>
+                </div>
+
+ 
+            </div>
+        </div>
+
+        <!-- Synthesis Screen -->
+        <div id="synthesisScreen" class="screen">
+            <div class="container mx-auto px-4 max-w-md pt-2">
+                <div id="storiesContainer" class="grid gap-4 pt-2">
+
+                </div>
+                <div id="storyStatus" class="mt-4"></div>
+                <audio id="storyAudio" style="display: none;">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+    </div>
+    <!-- Custom Audio Controls -->
+    <div id="audioControls" class="fixed bottom-0 left-0 right-0 bg-white shadow-lg h-24 transition-all duration-300">
+        <div class="container mx-auto px-4 max-w-md h-full">
+            <!-- Empty State -->
+            <div id="emptyState" class="h-full flex items-center justify-center text-gray-400 text-sm font-medium">
+                ✨ Please select a story to begin
+            </div>
+    
+            <!-- Active Controls -->
+            <div id="activeControls" class="hidden h-full flex flex-col justify-center">
+                <div class="flex items-center justify-between gap-4 pb-2">
+                    <!-- Rewind Button -->
+                    <button id="rewind" class="p-2 text-gray-600 hover:text-peach transition-colors group">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 19l-7-7 7-7"/>
+                            </svg>
+                            <span class="text-xs text-gray-600 group-hover:text-peach transition-colors">5s</span>
+                        </div>
+                    </button>
+    
+                    <!-- Play/Pause Button -->
+                    <button id="playPause" class="w-12 h-12 rounded-full bg-lavender text-white flex items-center justify-center 
+                                hover:bg-peach/90 transition-colors shadow-lg">
+                        <svg id="playIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                        </svg>
+                        <svg id="pauseIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </button>
+    
+                    <!-- Forward Button -->
+                    <button id="forward" class="p-2 text-gray-600 hover:text-peach transition-colors group">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-600 group-hover:text-peach transition-colors">5s</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+    
+                <!-- Progress Bar Container -->
+                <div class="w-full px-4">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <span id="currentTime" class="text-xs w-12 text-center">0:00</span>
+                        <input type="range" id="progress" class="flex-1 h-2 bg-gray-200 rounded-full cursor-pointer">
+                        <span id="duration" class="text-xs w-12 text-center">0:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/50 z-[1000] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
+            <h3 class="text-lg font-semibold mb-4">Confirm Re-cloning</h3>
+            <p class="text-gray-600 mb-6">This will permanently delete your current voice model and all generated stories. Are you sure?</p>
+            <div class="flex justify-end gap-3">
+                <button id="confirmCancel" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </button>
+                <button id="confirmDelete" class="px-4 py-2 bg-peach text-white rounded-lg hover:bg-peach/90">
+                    Delete & Re-clone
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Cloning Prompt Modal -->
+    <div id="clonePromptModal" class="fixed inset-0 bg-black/50 z-[1000] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div id="cloneModalHeader" class="bg-peach/10 p-4 border-b border-peach/20">
+                <h3 class="text-xl font-bold text-gray-800 logo-font flex items-center gap-2">
+                    <svg class="w-6 h-6 text-peach" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                    Read following text
+                </h3>
+            </div>
+    
+            <!-- Recording Content -->
+            <div id="recordingContent" class="max-h-[60vh] overflow-y-hidden p-6 bg-gray-50/50 relative">
+                <div class="scrolling-container absolute top-0 left-0 right-0 h-full">
+                    <div class="scrolling-text animate-scroll px-8" >
+                        <p class="text-lg leading-relaxed">
+                            Stoi na stacji lokomotywa,<br>
+                            Ciężka, ogromna i pot z niej spływa:<br>
+                            Tłusta oliwa.<br><br>
+                            Stoi i sapie, dyszy i dmucha,<br>
+                            Żar z rozgrzanego jej brzucha bucha:<br>
+                            Buch - jak gorąco!<br>
+                            Uch - jak gorąco!<br><br>
+                            Już ledwo sapie, już ledwo zipie,<br>
+                            A jeszcze palacz węgiel w nią sypie.<br><br>
+                            Wagony do niej podoczepiali<br>
+                            Wielkie i ciężkie, z żelaza, stali,<br>
+                            I pełno ludzi w każdym wagonie,<br>
+                            A w jednym krowy, a w drugim konie,<br>
+                            A w trzecim siedzą same grubasy,<br>
+                            Siedzą i jedzą tłuste kiełbasy.<br><br>
+                            A czwarty wagon pełen bananów,<br>
+                            A w piątym stoi sześć fortepianów,<br>
+                            W szóstym armata – o, jaka wielka!<br>
+                            Pod każdym kołem żelazna belka,<br>
+                            W siódmym dębowe stoły i szafy,<br>
+                            W ósmym słoń, niedźwiedź i dwie żyrafy,<br>
+                            W dziewiątym same tuczone świnie,<br>
+                            W dziesiątym kufry, paki i skrzynie,<br>
+                            A tych wagonów jest ze czterdzieści,<br>
+                            Sam nie wiem, co się w nich jeszcze mieści.
+                        </p>
+                    </div>
+                </div>  
+            </div>
+    
+            <!-- Processing Content -->
+            <div id="processingContent" class="hidden max-h-[60vh] overflow-y-auto p-6 bg-gray-50/50">
+                <div class="flex flex-col items-center justify-center h-full space-y-4">
+                    <svg class="animate-spin w-8 h-8 text-peach" fill="none" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" class="opacity-25"/>
+                        <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                    <p class="text-gray-600">Processing your voice sample...</p>
+                </div>
+            </div>
+    
+            <!-- Modal Footer -->
+            <div id="clonePromptModalFooter" class="bg-gray-50 p-4 border-t border-gray-100 flex flex-col items-center gap-3">
+                <div class="w-full">
+                    <div class="h-2 bg-gray-100 rounded-full mb-4 overflow-hidden">
+                        <div class="progress-bar h-full bg-peach transition-all duration-300 w-0"></div>
+                    </div>
+                    <div id="recordStatus" class="text-sm text-center mb-2"></div>
+                    <button id="cancelRecording" 
+                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                        Cancel Recording
+                    </button>
+                </div>
+                <audio id="audioPreview" style="display: none;"></audio>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
