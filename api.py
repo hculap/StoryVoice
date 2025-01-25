@@ -30,14 +30,14 @@ os.makedirs(GENERATED_AUDIO_DIR, exist_ok=True)
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('static', 'index.html')
 
 @app.route('/<path:filename>')
 def serve_static(filename):
     # Only serve allowed file types
     allowed_extensions = ['css', 'js', 'html', 'png', 'jpg', 'jpeg', 'gif']
     if '.' in filename and filename.split('.')[-1] in allowed_extensions:
-        return send_from_directory('.', filename)
+        return send_from_directory('static', filename)
     return "Not Found", 404
 
 @app.route('/api/clone', methods=['POST'])
