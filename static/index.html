@@ -125,6 +125,10 @@
             transform: translateY(-8rem); /* Move up by its height */
         }
 
+        #playPause {
+            z-index: 2; /* Ensure button stays above progress bar */
+            position: relative;
+        }
 
         #progress {
             -webkit-appearance: none;
@@ -132,6 +136,8 @@
             height: 4px;
             background: #e5e7eb;
             border-radius: 2px;
+            touch-action: none; /* Prevent default touch behaviors */
+            z-index: 1; /* Keep below buttons */
         }
 
         #progress::-webkit-slider-thumb {
@@ -159,6 +165,23 @@
 
         #progress::-moz-range-thumb:hover {
             transform: scale(1.2);
+        }
+
+        @media (pointer: coarse) {
+            #audioControls {
+                padding-bottom: env(safe-area-inset-bottom); /* Handle iPhone notch */
+            }
+            
+            #playPause {
+                min-width: 56px;
+                min-height: 56px;
+            }
+
+            /* Increase touch target size for progress bar */
+            #progress {
+                height: 8px;
+                -webkit-tap-highlight-color: transparent;
+            }
         }
 
         #statusToast {
@@ -447,7 +470,7 @@
     
                     <!-- Play/Pause Button -->
                     <button id="playPause" class="w-12 h-12 rounded-full bg-lavender text-white flex items-center justify-center 
-                                hover:bg-peach/90 transition-colors shadow-lg">
+                                hover:bg-peach/90 transition-colors shadow-lg p-3 md:p-0">
                         <svg id="playIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                         </svg>

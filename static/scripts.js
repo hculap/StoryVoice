@@ -444,12 +444,17 @@ async function playStory(storyId) {
         });
 
         // Control event listeners
-        document.getElementById('playPause').addEventListener('click', () => {
-            if (audioElement.paused) {
-                audioElement.play();
-            } else {
-                audioElement.pause();
-            }
+        const playPauseButton = document.getElementById('playPause');
+
+        ['click', 'touchstart'].forEach(eventType => {
+            playPauseButton.addEventListener(eventType, (e) => {
+                e.preventDefault(); // Prevent double-tap zoom
+                if (audioElement.paused) {
+                    audioElement.play();
+                } else {
+                    audioElement.pause();
+                }
+            });
         });
 
         document.getElementById('rewind').addEventListener('click', () => {
@@ -463,6 +468,10 @@ async function playStory(storyId) {
         document.getElementById('progress').addEventListener('input', (e) => {
             const seekTime = (e.target.value / 100) * audioElement.duration;
             audioElement.currentTime = seekTime;
+        });
+
+        document.getElementById('progress').addEventListener('touchstart', (e) => {
+            e.stopPropagation(); // Prevent interfering with parent elements
         });
 
         // Auto-play after metadata is loaded
