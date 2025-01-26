@@ -1,1 +1,1 @@
-web: gunicorn api:app --timeout 240 --workers 2 --preload
+web: gunicorn api:app --timeout 240 --workers 2 --preloadheroku run bash --app

@@ -297,6 +297,14 @@
         .clonePromptModal:not([data-visible="true"]) .scrolling-text {
             animation-play-state: paused;
         }
+
+        #storiesLoader {
+            display: none; /* Hidden by default */
+        }
+
+        #synthesisScreen.active-screen #storiesLoader {
+            display: block; /* Show when parent screen is active */
+        }
     </style>
 </head>
 <body class="bg-[#F8F9FD] min-h-screen">
@@ -397,13 +405,21 @@
         <!-- Synthesis Screen -->
         <div id="synthesisScreen" class="screen">
             <div class="container mx-auto px-4 max-w-md pt-2">
-                <div id="storiesContainer" class="grid gap-4 pt-2">
-
+                <!-- Loader Container -->
+                <div id="storiesLoader" class="text-center py-8 space-y-3">
+                    <svg class="animate-spin w-8 h-8 text-peach mx-auto" fill="none" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" class="opacity-25"/>
+                        <path fill="currentColor" class="opacity-75" 
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                    <p class="text-gray-600 text-sm font-medium">Loading stories...</p>
                 </div>
+        
+                <!-- Stories Container -->
+                <div id="storiesContainer" class="grid gap-4 pt-2 hidden"></div>
+                
                 <div id="storyStatus" class="mt-4"></div>
-                <audio id="storyAudio" style="display: none;">
-                    Your browser does not support the audio element.
-                </audio>
+                <audio id="storyAudio" style="display: none;"></audio>
             </div>
         </div>
     </div>

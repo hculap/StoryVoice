@@ -34,6 +34,7 @@ function showScreen(screenId) {
     if (screenId === 'synthesisScreen') {
         backButton.classList.remove('hidden');
         document.getElementById('audioControls').style.bottom = '0';
+        loadStories();
     } else {
         backButton.classList.add('hidden');
         document.getElementById('audioControls').style.bottom = '-8rem';
@@ -262,10 +263,21 @@ async function handleAudioUpload(blob) {
 // Story Management
 async function loadStories() {
     try {
+        // Show loader and hide stories container
+        document.getElementById('storiesLoader').style.display = 'block';
+        document.getElementById('storiesContainer').classList.add('hidden');
+
         const stories = await fetchStories();
         await renderStories(stories);
+
+        // Hide loader and show stories
+        document.getElementById('storiesLoader').style.display = 'none';
+        document.getElementById('storiesContainer').classList.remove('hidden');
+
     } catch (error) {
         showError('Failed to load stories');
+        // Hide loader on error too
+        document.getElementById('storiesLoader').style.display = 'none';
     }
 }
 
@@ -383,17 +395,8 @@ async function generateStory(storyId) {
 
         if (!response.ok) throw new Error('Generation failed');
         
-        // Poll for completion
-        let audioReady = false;
-        let attempts = 0;
-        while (!audioReady && attempts < 15) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            audioReady = await checkAudioExists(storyId);
-            attempts++;
-            showStatus(`Generating... (${attempts * 2}s)`, 'info');
-            await renderStories(); // Update UI during generation
-        }
-
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        audioReady = await checkAudioExists(storyId);
         if (!audioReady) throw new Error('Generation timeout');
         
         showStatus('Audio ready!', 'success');
