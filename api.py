@@ -10,7 +10,7 @@ import json
 import shutil  
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/')
 
 # Load environment variables
 load_dotenv()
@@ -35,10 +35,14 @@ def index():
 @app.route('/<path:filename>')
 def serve_static(filename):
     # Only serve allowed file types
-    allowed_extensions = ['css', 'js', 'html', 'png', 'jpg', 'jpeg', 'gif']
+    allowed_extensions = ['css', 'js', 'html', 'png', 'jpg', 'jpeg', 'gif', 'ico', 'svg']
     if '.' in filename and filename.split('.')[-1] in allowed_extensions:
         return send_from_directory('static', filename)
     return "Not Found", 404
+
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory('static', 'manifest.json')
 
 @app.route('/api/clone', methods=['POST'])
 def clone_voice():

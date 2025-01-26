@@ -699,3 +699,113 @@ document.getElementById('cancelRecording').addEventListener('click', () => {
 document.getElementById('uploadButton').addEventListener('click', () => {
     document.getElementById('audioFile').click();
 });
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful');
+        })
+        .catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+    });
+  }
+  
+  // Install Prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install button (optional)
+    // document.getElementById('installButton').style.display = 'block';
+  });
+  
+  // Handle install button click
+  function installPWA() {
+    if(deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted install');
+        }
+        deferredPrompt = null;
+      });
+    }
+  }
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', e => {
+touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', e => {
+touchEndX = e.changedTouches[0].screenX;
+if (Math.abs(touchEndX - touchStartX) > 50) { // 50px threshold
+    if (touchEndX < touchStartX) {
+        // Swipe left - next story
+        navigateStories('next');
+    } else {
+        // Swipe right - previous story
+        navigateStories('prev');
+    }
+}
+});
+
+function navigateStories(direction) {
+    const stories = Array.from(document.querySelectorAll('.story-item'));
+    
+    // If no story is selected, select the first one
+    if (!selectedStoryId) {
+        if (stories.length > 0) {
+            const firstStoryId = stories[0].dataset.storyId;
+            handleStoryClick(firstStoryId);
+        }
+        return;
+    }
+
+    // Find the index of the currently selected story
+    const currentIndex = stories.findIndex(story => story.dataset.storyId === selectedStoryId.toString());
+
+    // Determine the next or previous story based on the direction
+    let newIndex;
+    if (direction === 'next') {
+        newIndex = (currentIndex + 1) % stories.length; // Wrap around to the first story if at the end
+    } else if (direction === 'prev') {
+        newIndex = (currentIndex - 1 + stories.length) % stories.length; // Wrap around to the last story if at the beginning
+    } else {
+        return; // Invalid direction
+    }
+
+    // Select the new story
+    const newStoryId = stories[newIndex].dataset.storyId;
+    handleStoryClick(newStoryId);
+}
+
+function nativeTapFeedback() {
+    if ('vibrate' in navigator) {
+        navigator.vibrate(50); // 50ms vibration
+    }
+}
+
+// Add to button click handlers
+document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', nativeTapFeedback);
+});
+
+// Detect platform
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isAndroid = /Android/.test(navigator.userAgent);
+
+if (isIOS) {
+    document.documentElement.classList.add('ios');
+    document.documentElement.style.setProperty('--font-body', '-apple-system');
+}
+
+if (isAndroid) {
+    document.documentElement.classList.add('android');
+    document.documentElement.style.setProperty('--font-body', 'Roboto');
+}
