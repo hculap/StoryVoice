@@ -735,25 +735,25 @@ if ('serviceWorker' in navigator) {
     }
   }
 
-let touchStartX = 0;
-let touchEndX = 0;
+// let touchStartX = 0;
+// let touchEndX = 0;
 
-document.addEventListener('touchstart', e => {
-touchStartX = e.changedTouches[0].screenX;
-});
+// document.addEventListener('touchstart', e => {
+// touchStartX = e.changedTouches[0].screenX;
+// });
 
-document.addEventListener('touchend', e => {
-touchEndX = e.changedTouches[0].screenX;
-if (Math.abs(touchEndX - touchStartX) > 50) { // 50px threshold
-    if (touchEndX < touchStartX) {
-        // Swipe left - next story
-        navigateStories('next');
-    } else {
-        // Swipe right - previous story
-        navigateStories('prev');
-    }
-}
-});
+// document.addEventListener('touchend', e => {
+// touchEndX = e.changedTouches[0].screenX;
+// if (Math.abs(touchEndX - touchStartX) > 50) { // 50px threshold
+//     if (touchEndX < touchStartX) {
+//         // Swipe left - next story
+//         navigateStories('next');
+//     } else {
+//         // Swipe right - previous story
+//         navigateStories('prev');
+//     }
+// }
+// });
 
 function navigateStories(direction) {
     const stories = Array.from(document.querySelectorAll('.story-item'));
