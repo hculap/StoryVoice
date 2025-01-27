@@ -31,24 +31,3 @@ self.addEventListener('activate', (event) => {
     ))
   );
 });
-
-const CACHE_NAME = 'storyvoice-v2';
-const OFFLINE_URL = '/offline.html';
-
-self.addEventListener('fetch', (event) => {
-    if (event.request.mode === 'navigate') {
-        event.respondWith(
-            fetch(event.request).catch(() => caches.match(OFFLINE_URL))
-        );
-    } else {
-        event.respondWith(
-            caches.match(event.request)
-                .then(response => response || fetch(event.request))
-                .catch(() => {
-                    if (event.request.destination === 'image') {
-                        return caches.match('/icons/offline-image.png');
-                    }
-                })
-        );
-    }
-});
