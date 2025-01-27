@@ -33,13 +33,14 @@
     
     
     <!-- Preconnect to External Domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://story-voice-47d650d68bd6.herokuapp.com">
     <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
 
      <!-- Font Loading with Fallback -->
      <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;600&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;600&display=swap&display=swap">
         <link rel="stylesheet" href="/styles.css">
     </noscript>
 
@@ -53,7 +54,7 @@
      <meta name="twitter:site" content="@StoryVoiceApp">
 
     <!-- Security Headers (via Meta Tags) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
     <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">
 
     <!-- Critical CSS -->
@@ -411,7 +412,7 @@
     </style>
 
     <!-- Non-critical CSS -->
-    <link rel="stylesheet" href="https://cdn.tailwindcss.com" media="print" onload="this.media='all'">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Asynchronous CSS Loader
         !function(e){"use strict";var n=function(n,t,o){var i=e.document.createElement("link");for(var a in t)i[a]=t[a];i.rel="stylesheet",i.href=n,o||(e.document.head.appendChild(i),i.onload=function(){this.rel="stylesheet"})};e.loadCSS=n}(window);
