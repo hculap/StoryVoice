@@ -96,10 +96,6 @@ coverage.xml
 instance/
 migrations/
 
-# Heroku temporary files
-*.gif
-*.png
-
 # Custom application temp files
 /temp_audio/
 /voice_samples/
