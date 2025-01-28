@@ -329,7 +329,7 @@ async function renderStories() {
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex-1">
                         <h3 class="text-lg font-semibold">${story.title}</h3>
-                        <p class="text-gray-600 text-sm">by ${story.author}</p>
+                        <p class="text-gray-600 text-sm">Autor: ${story.author}</p>
                     </div>
                     <button onclick="handleStoryClick(${story.id})" 
                             id="story-${story.id}" 
