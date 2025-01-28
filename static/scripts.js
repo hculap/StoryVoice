@@ -734,17 +734,22 @@ document.getElementById('uploadButton').addEventListener('click', () => {
 });
 
 // Register Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          console.log('ServiceWorker registration successful');
-        })
-        .catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js?v=1.1') // Update this version for each deployment
+      .then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if(newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+              window.location.reload();
+            }
+          });
         });
-    });
-  }
+      });
+    
+    // Check for updates every time the page loads
+    navigator.serviceWorker.ready.then(reg => reg.update());
+}
   
   // Install Prompt
   let deferredPrompt;

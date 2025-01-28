@@ -76,6 +76,12 @@ def index():
 def serve_manifest():
     return send_from_directory('static', 'manifest.json')
 
+@app.route('/sw.js')
+def serve_sw():
+    response = send_from_directory('static', 'sw.js')
+    response.headers['Cache-Control'] = 'no-cache, max-age=0'
+    return response
+
 @app.route('/<path:filename>')
 def serve_static(filename):
     if '.' in filename:
