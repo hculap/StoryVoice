@@ -415,10 +415,21 @@ async function generateStory(storyId) {
             })
         });
 
-        if (!response.ok) throw new Error('Generation failed');
-        
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        audioReady = await checkAudioExists(storyId);
+        if (!response.ok) {
+            console.warn('Synthesis request failed. Proceeding to poll for audio availability.');
+        }
+
+        // Start polling for audio readiness
+        let audioReady = false;
+        const maxPollingTime = 2 * 60 * 1000; // 2 minutes
+        const pollingInterval = 5000; // 5 seconds
+        const startTime = Date.now();
+
+        while (!audioReady && Date.now() - startTime < maxPollingTime) {
+            await new Promise(resolve => setTimeout(resolve, pollingInterval));
+            audioReady = await checkAudioExists(storyId);
+        }
+
         if (!audioReady) throw new Error('Generation timeout');
         
         showStatus('Audio ready!', 'success');
