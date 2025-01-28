@@ -47,6 +47,7 @@ function showScreen(screenId) {
 
     if (screenId === 'synthesisScreen') {
         // Slide down the sticky header
+        stickyHeader.classList.remove('hidden');
         stickyHeader.classList.remove('sticky-header-slide-up');
         stickyHeader.classList.add('sticky-header-slide-down');
 
