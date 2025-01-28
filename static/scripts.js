@@ -27,6 +27,7 @@ function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active-screen');
     });
+
     document.getElementById(screenId).classList.add('active-screen');
     
     // Update header state
@@ -40,7 +41,27 @@ function showScreen(screenId) {
         document.getElementById('audioControls').style.bottom = '-8rem';
         hideAudioControls();
     }
-    
+
+    const stickyHeader = document.querySelector('.sticky-header');
+    const audioControls = document.getElementById('audioControls');
+
+    if (screenId === 'synthesisScreen') {
+        // Slide down the sticky header
+        stickyHeader.classList.remove('sticky-header-slide-up');
+        stickyHeader.classList.add('sticky-header-slide-down');
+
+        // Slide up the audio controls
+        audioControls.classList.remove('audio-controls-slide-down');
+        audioControls.classList.add('audio-controls-slide-up');
+    } else {
+        // Slide up the sticky header (hide)
+        stickyHeader.classList.remove('sticky-header-slide-down');
+        stickyHeader.classList.add('sticky-header-slide-up');
+
+        // Slide down the audio controls (hide)
+        audioControls.classList.remove('audio-controls-slide-up');
+        audioControls.classList.add('audio-controls-slide-down');
+    }
 window.scrollTo(0, 0);
 }
 
@@ -735,55 +756,6 @@ if ('serviceWorker' in navigator) {
     }
   }
 
-// let touchStartX = 0;
-// let touchEndX = 0;
-
-// document.addEventListener('touchstart', e => {
-// touchStartX = e.changedTouches[0].screenX;
-// });
-
-// document.addEventListener('touchend', e => {
-// touchEndX = e.changedTouches[0].screenX;
-// if (Math.abs(touchEndX - touchStartX) > 50) { // 50px threshold
-//     if (touchEndX < touchStartX) {
-//         // Swipe left - next story
-//         navigateStories('next');
-//     } else {
-//         // Swipe right - previous story
-//         navigateStories('prev');
-//     }
-// }
-// });
-
-function navigateStories(direction) {
-    const stories = Array.from(document.querySelectorAll('.story-item'));
-    
-    // If no story is selected, select the first one
-    if (!selectedStoryId) {
-        if (stories.length > 0) {
-            const firstStoryId = stories[0].dataset.storyId;
-            handleStoryClick(firstStoryId);
-        }
-        return;
-    }
-
-    // Find the index of the currently selected story
-    const currentIndex = stories.findIndex(story => story.dataset.storyId === selectedStoryId.toString());
-
-    // Determine the next or previous story based on the direction
-    let newIndex;
-    if (direction === 'next') {
-        newIndex = (currentIndex + 1) % stories.length; // Wrap around to the first story if at the end
-    } else if (direction === 'prev') {
-        newIndex = (currentIndex - 1 + stories.length) % stories.length; // Wrap around to the last story if at the beginning
-    } else {
-        return; // Invalid direction
-    }
-
-    // Select the new story
-    const newStoryId = stories[newIndex].dataset.storyId;
-    handleStoryClick(newStoryId);
-}
 
 function nativeTapFeedback() {
     if ('vibrate' in navigator) {

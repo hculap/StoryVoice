@@ -148,10 +148,11 @@
             z-index: 100;
             height: 8rem; /* 96px */
             position: fixed;
-            bottom: -8rem; /* Start hidden */
+            bottom: -8rem; /* Initially hidden */
             left: 0;
             right: 0;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
         }
 
         #activeControls {
@@ -301,6 +302,8 @@
         .sticky-header {
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
             padding-top: var(--safe-area-top);
+            transform: translateY(-100%); /* Initially hidden */
+            transition: transform 0.3s ease-out;
         }
 
         .mobile-nav {
@@ -404,6 +407,71 @@
         .modal.open {
             transform: translateY(0);
             opacity: 1;
+        }
+
+        /* Slide Down for Sticky Header */
+        @keyframes stickyHeaderSlideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Slide Up for Audio Controls */
+        @keyframes audioControlsSlideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Add slide-in classes */
+        .sticky-header-slide-down {
+            animation: stickyHeaderSlideDown 0.5s ease-out forwards;
+        }
+
+        .audio-controls-slide-up {
+            animation: audioControlsSlideUp 0.5s ease-out forwards;
+        }
+
+        /* Add slide-out animations (optional for transitions to hide) */
+        @keyframes stickyHeaderSlideUp {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes audioControlsSlideDown {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Add slide-out classes */
+        .sticky-header-slide-up {
+            animation: stickyHeaderSlideUp 0.5s ease-in forwards;
+        }
+
+        .audio-controls-slide-down {
+            animation: audioControlsSlideDown 0.5s ease-in forwards;
         }
     </style>
 
