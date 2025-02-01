@@ -182,20 +182,31 @@ def get_story(story_id):
 
 @app.route('/api/audio/<string:voice_id>/<int:story_id>.mp3')
 def get_audio(voice_id, story_id):
-    """Stream audio directly from S3"""
+    s3_key = f"{voice_id}/{story_id}.mp3"
+    # Get the client's Range header (if any)
+    range_header = request.headers.get('Range')
+    s3_kwargs = {'Bucket': CONFIG["S3_BUCKET"], 'Key': s3_key}
+    if range_header:
+        s3_kwargs['Range'] = range_header
+
     try:
-        s3_key = f"{voice_id}/{story_id}.mp3"
-        response = s3.get_object(Bucket=CONFIG["S3_BUCKET"], Key=s3_key)
-        return Response(
-            response['Body'].read(),
-            mimetype='audio/mpeg',
-            headers={
-                "Content-Disposition": f"attachment; filename={story_id}.mp3",
-                "Cache-Control": "public, max-age=31536000"
-            }
-        )
+        s3_response = s3.get_object(**s3_kwargs)
     except ClientError as e:
         return jsonify({"error": str(e)}), 404
+
+    data = s3_response['Body'].read()
+    # If a Range was requested, S3 returns status 206 (Partial Content)
+    status_code = 206 if range_header else 200
+
+    response = Response(data, status=status_code, mimetype='audio/mpeg')
+    response.headers['Accept-Ranges'] = 'bytes'
+    # If S3 returned a ContentRange header (when a Range was requested), include it in the response.
+    if range_header and 'ContentRange' in s3_response:
+        response.headers['Content-Range'] = s3_response['ContentRange']
+    response.headers['Content-Length'] = s3_response['ContentLength']
+    response.headers['Content-Disposition'] = f'attachment; filename={story_id}.mp3'
+    return response
+
 
 @app.route('/api/audio/exists/<string:voice_id>/<int:story_id>')
 def check_audio_exists(voice_id, story_id):

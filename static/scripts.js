@@ -223,17 +223,6 @@ async function startRecording() {
 }
 
 
-function startProgressAnimation() {
-    let startTime = Date.now();
-    const updateProgress = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = (elapsed / 30000) * 100;
-        document.querySelector('.progress-bar').style.width = `${progress}%`;
-        if (progress < 100) requestAnimationFrame(updateProgress);
-    };
-    requestAnimationFrame(updateProgress);
-}
-
 // Audio Upload
 document.getElementById('audioFile').addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -438,85 +427,92 @@ async function generateStory(storyId) {
     }
 }
 
-async function playStory(storyId) {
-    showAudioControls();
-    const audioElement = document.getElementById('storyAudio');
-    const playIcon = document.getElementById('playIcon');
-    const pauseIcon = document.getElementById('pauseIcon');
-    
-    try {
-        showAudioControls();
-        showStatus('Loading audio...', 'info');
+const audioElement = document.getElementById('storyAudio');
+const playIcon = document.getElementById('playIcon');
+const pauseIcon = document.getElementById('pauseIcon');
+const playPauseButton = document.getElementById('playPause');
+const rewindButton = document.getElementById('rewind');
+const forwardButton = document.getElementById('forward');
+const progressSlider = document.getElementById('progress');
+const durationDisplay = document.getElementById('duration');
+const currentTimeDisplay = document.getElementById('currentTime');
 
-        const audioUrl = `${API_BASE_URL}/audio/${currentVoiceId}/${storyId}.mp3?t=${Date.now()}`;
-        audioElement.src = audioUrl;
+// Update UI on play, pause, and when audio ends
+audioElement.addEventListener('play', () => {
+    playIcon.classList.add('hidden');
+    pauseIcon.classList.remove('hidden');
+});
+audioElement.addEventListener('pause', () => {
+    playIcon.classList.remove('hidden');
+    pauseIcon.classList.add('hidden');
+});
+audioElement.addEventListener('ended', () => {
+    playIcon.classList.remove('hidden');
+    pauseIcon.classList.add('hidden');
+});
 
-        audioElement.addEventListener('loadedmetadata', () => {
-            document.getElementById('duration').textContent = formatTime(audioElement.duration);
-        });
-
-        audioElement.addEventListener('timeupdate', () => {
-            document.getElementById('currentTime').textContent = formatTime(audioElement.currentTime);
-            document.getElementById('progress').value = 
-                (audioElement.currentTime / audioElement.duration) * 100 || 0;
-        });
-
-        audioElement.addEventListener('play', () => {
-            playIcon.classList.add('hidden');
-            pauseIcon.classList.remove('hidden');
-        });
-
-        audioElement.addEventListener('pause', () => {
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-        });
-
-        audioElement.addEventListener('ended', () => {
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-        });
-
-        // Control event listeners
-        const playPauseButton = document.getElementById('playPause');
-
-        ['click', 'touchstart'].forEach(eventType => {
-            playPauseButton.addEventListener(eventType, (e) => {
-                e.preventDefault(); // Prevent double-tap zoom
-                if (audioElement.paused) {
-                    audioElement.play();
-                } else {
-                    audioElement.pause();
-                }
-            });
-        });
-
-        document.getElementById('rewind').addEventListener('click', () => {
-            audioElement.currentTime = Math.max(0, audioElement.currentTime - 5);
-        });
-
-        document.getElementById('forward').addEventListener('click', () => {
-            audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 5);
-        });
-
-        document.getElementById('progress').addEventListener('input', (e) => {
-            const seekTime = (e.target.value / 100) * audioElement.duration;
-            audioElement.currentTime = seekTime;
-        });
-
-        document.getElementById('progress').addEventListener('touchstart', (e) => {
-            e.stopPropagation(); // Prevent interfering with parent elements
-        });
-
-        // Auto-play after metadata is loaded
-        audioElement.addEventListener('loadedmetadata', () => {
-            audioElement.play().catch(error => {
-                showError('Auto-play failed. Click the play button.');
-            });
-        });
-
-    } catch (error) {
-        showError(`Playback failed: ${error.message}`);
+// Update current time and progress slider as the audio plays
+audioElement.addEventListener('timeupdate', () => {
+    currentTimeDisplay.textContent = formatTime(audioElement.currentTime);
+    if (audioElement.duration) {
+    progressSlider.value = (audioElement.currentTime / audioElement.duration) * 100;
     }
+});
+
+// Update duration display when metadata is loaded
+audioElement.addEventListener('loadedmetadata', () => {
+    durationDisplay.textContent = formatTime(audioElement.duration);
+});
+
+// Play/Pause button (use a single event type to avoid duplicate triggers)
+playPauseButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (audioElement.paused) {
+    audioElement.play();
+    } else {
+    audioElement.pause();
+    }
+});
+
+// Rewind: go back 5 seconds
+rewindButton.addEventListener('click', () => {
+    audioElement.currentTime = Math.max(0, audioElement.currentTime - 5);
+});
+
+// Forward: go forward 5 seconds
+forwardButton.addEventListener('click', () => {
+    audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 5);
+});
+
+// Progress slider: allow seeking within the audio track
+progressSlider.addEventListener('input', (e) => {
+    const seekTime = (e.target.value / 100) * audioElement.duration;
+    audioElement.currentTime = seekTime;
+});
+
+// Prevent touchstart on the progress slider from interfering with other events
+progressSlider.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+});
+
+async function playStory(storyId) {
+showAudioControls();
+showStatus('Loading audio...', 'info');
+
+// Build the audio URL with a cache-busting timestamp
+const audioUrl = `${API_BASE_URL}/audio/${currentVoiceId}/${storyId}.mp3?t=${Date.now()}`;
+audioElement.src = audioUrl;
+
+// Use a one-time loadedmetadata listener to auto-play when ready
+const onLoaded = () => {
+    // Metadata is loaded and duration is updated via initializeAudioControls
+    audioElement.play().catch(error => {
+    showError('Auto-play failed. Please click the play button.');
+    });
+    // Remove this listener so it only runs once per source change
+    audioElement.removeEventListener('loadedmetadata', onLoaded);
+};
+audioElement.addEventListener('loadedmetadata', onLoaded);
 }
 
 function stopAudio() {
@@ -603,10 +599,6 @@ function showStatus(message, type) {
             toast.classList.add('hidden');
         }, 300);
     }, 3000);
-}
-
-function showError(message) {
-    showStatus(message, 'error');
 }
 
 function showError(message) {
@@ -716,26 +708,13 @@ function cleanupMediaResources() {
     audioChunks = [];
 }
 
-// Update the cancel recording handler
-document.getElementById('cancelRecording').addEventListener('click', () => {
-    isCanceled = true;
-    if (mediaRecorder?.state === 'recording') {
-        mediaRecorder.stop();
-        clearTimeout(recordingTimeout);
-        clearInterval(progressInterval);
-    }
-    cleanupMediaResources();
-    closeClonePrompt();
-    showStatus('Recording canceled', 'info');
-});
-
 document.getElementById('uploadButton').addEventListener('click', () => {
     document.getElementById('audioFile').click();
 });
 
 // Register Service Worker
 if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=1.4') // Update this version for each deployment
+    navigator.serviceWorker.register('/sw.js?v=1.5') // Update this version for each deployment
       .then(reg => {
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
