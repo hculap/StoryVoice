@@ -714,7 +714,7 @@ document.getElementById('uploadButton').addEventListener('click', () => {
 
 // Register Service Worker
 if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=1.5') // Update this version for each deployment
+    navigator.serviceWorker.register('/sw.js?v=1.6') // Update this version for each deployment
       .then(reg => {
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
