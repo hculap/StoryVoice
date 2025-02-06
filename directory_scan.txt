@@ -4,6 +4,7 @@
     .DS_Store
     requirements.txt
     runtime.txt
+    directory_scan.txt
     README.md
     api.py
     .gitignore
@@ -21,6 +22,7 @@
         2.json
         3.json
         4.json
+        5.json
     [static]/
         index.html
         styles.css
@@ -55,6 +57,13 @@ boto3==1.34.1
 /Users/szymonpaluch/Projects/AI/voicecloning/runtime.txt:
 "
 python-3.10.13
+"
+##############################
+
+##############################
+/Users/szymonpaluch/Projects/AI/voicecloning/directory_scan.txt:
+"
+
 "
 ##############################
 
@@ -227,6 +236,12 @@ def index():
 def serve_manifest():
     return send_from_directory('static', 'manifest.json')
 
+@app.route('/sw.js')
+def serve_sw():
+    response = send_from_directory('static', 'sw.js')
+    response.headers['Cache-Control'] = 'no-cache, max-age=0'
+    return response
+
 @app.route('/<path:filename>')
 def serve_static(filename):
     if '.' in filename:
@@ -327,20 +342,31 @@ def get_story(story_id):
 
 @app.route('/api/audio/<string:voice_id>/<int:story_id>.mp3')
 def get_audio(voice_id, story_id):
-    """Stream audio directly from S3"""
+    s3_key = f"{voice_id}/{story_id}.mp3"
+    # Get the client's Range header (if any)
+    range_header = request.headers.get('Range')
+    s3_kwargs = {'Bucket': CONFIG["S3_BUCKET"], 'Key': s3_key}
+    if range_header:
+        s3_kwargs['Range'] = range_header
+
     try:
-        s3_key = f"{voice_id}/{story_id}.mp3"
-        response = s3.get_object(Bucket=CONFIG["S3_BUCKET"], Key=s3_key)
-        return Response(
-            response['Body'].read(),
-            mimetype='audio/mpeg',
-            headers={
-                "Content-Disposition": f"attachment; filename={story_id}.mp3",
-                "Cache-Control": "public, max-age=31536000"
-            }
-        )
+        s3_response = s3.get_object(**s3_kwargs)
     except ClientError as e:
         return jsonify({"error": str(e)}), 404
+
+    data = s3_response['Body'].read()
+    # If a Range was requested, S3 returns status 206 (Partial Content)
+    status_code = 206 if range_header else 200
+
+    response = Response(data, status=status_code, mimetype='audio/mpeg')
+    response.headers['Accept-Ranges'] = 'bytes'
+    # If S3 returned a ContentRange header (when a Range was requested), include it in the response.
+    if range_header and 'ContentRange' in s3_response:
+        response.headers['Content-Range'] = s3_response['ContentRange']
+    response.headers['Content-Length'] = s3_response['ContentLength']
+    response.headers['Content-Disposition'] = f'attachment; filename={story_id}.mp3'
+    return response
+
 
 @app.route('/api/audio/exists/<string:voice_id>/<int:story_id>')
 def check_audio_exists(voice_id, story_id):
@@ -523,10 +549,10 @@ if __name__ == "__main__":
 "
 {
     "id": 1,
-    "title": "Lokomotywa",
-    "author": "Julian Tuwim",
-    "content": "Stoi na stacji lokomotywa, ciężka, ogromna i pot z niej spływa: tłusta oliwa. Stoi i sapie, dyszy i dmucha, żar z rozgrzanego jej brzucha bucha: buch — jak gorąco, uch — jak gorąco, puff — jak gorąco, uff — jak gorąco. Już ledwo sapie, już ledwo zipie, a jeszcze palacz węgiel w nią sypie. Wagony do niej podoczepiali, wielkie i ciężkie, z żelaza, stali. I pełno ludzi w każdym wagonie, a w jednym krowy, a w drugim konie, a w trzecim siedzą same grubasy, siedzą i jedzą tłuste kiełbasy, a czwarty wagon pełen bananów, a w piątym stoi sześć fortepianów, w szóstym armata — o! jaka wielka, pod każdym kołem żelazna belka! W siódmym dębowe stoły i szafy, w ósmym słoń, niedźwiedź i dwie żyrafy, w dziewiątym — same tuczone świnie, w dziesiątym — kufry, paki i skrzynie. A tych wagonów jest ze czterdzieści, sam nie wiem, co się w nich jeszcze mieści. Lecz choćby przyszło tysiąc atletów i każdy zjadłby tysiąc kotletów, i każdy nie wiem jak się wytężał, to nie udźwigną, taki to ciężar. Nagle — gwizd, nagle — świst, para — buch, koła — w ruch! Najpierw — powoli — jak żółw — ociężale, ruszyła — maszyna — po szynach — ospale, szarpnęła wagony i ciągnie z mozołem, i kręci się, kręci się koło za kołem, i biegu przyspiesza, i gna coraz prędzej, i dudni, i stuka, łomoce i pędzi. A dokąd? A dokąd? A dokąd? Na wprost, po torze, po torze, po torze, przez most, przez góry, przez tunel, przez pola, przez las, i spieszy się, spieszy, by zdążyć na czas. Do taktu turkoce i puka, i stuka to: tak to to, tak to to, tak to to, tak to to. Gładko tak, lekko tak toczy się w dal, jak gdyby to była piłeczka, nie stal, nie ciężka maszyna, zziajana, zdyszana, lecz fraszka, igraszka, zabawka blaszana. A skądże to, jakże to, czemu tak gna? A co to to, co to to, kto to tak pcha, że pędzi, że wali, że bucha buch, buch? To para gorąca wprawiła to w ruch, to para, co z kotła rurami do tłoków, a tłoki kołami ruszają z dwóch boków i gnają, i pchają, i pociąg się toczy, bo para te tłoki wciąż tłoczy i tłoczy, i koła turkocą, i puka, i stuka to: tak to to, tak to to, tak to to, tak to to!…"
-}
+    "title": "Jaś i Małgosia",
+    "author": "Bracia Grimm",
+    "content": "Dawno, dawno temu, w niewielkiej chatce na skraju ciemnego lasu mieszkał ubogi drwal ze swoją żoną i dwójką dzieci. Chłopiec miał na imię Jaś, a jego siostra – Małgosia. Mimo że rodzeństwo bardzo się kochało, często byli głodni i smutni, bo rodzicom brakowało pieniędzy na jedzenie.\n\nPewnego dnia matka zdecydowała, że z powodu wielkiej biedy najlepiej będzie zostawić Jasia i Małgosię w lesie. Ojciec nie chciał się na to zgodzić, kochał bowiem swoje dzieci i nie wyobrażał sobie, żeby miało im się stać coś złego. Jednak matka tak długo nalegała, aż w końcu zgodził się, by zaprowadzić rodzeństwo w głąb lasu.\n\nJaś, który był bardzo sprytny, zauważył, co planują rodzice, i postanowił zostawiać za sobą okruchy chleba, aby później odnaleźć drogę powrotną. Niestety, ptaki zjadły wszystkie okruszki, a dzieci nie mogły już wrócić do domu.\n\nBłąkając się po lesie w poszukiwaniu ratunku, Jaś i Małgosia dotarli do przedziwnej chatki. Wszystkie jej ściany zdawały się być pokryte piernikiem, dach oblepiony był lukrem, a okiennice zrobione z kolorowych cukierków. Spragnieni i głodni rozpoczęli ucztę z kawałków piernikowych ścian.\n\nW środku mieszkała jednak zła wiedźma, która usłyszawszy chrupanie, wyłoniła się zza drzwi i złapała rodzeństwo. – „Ho, ho! Jakie słodkie kąski same wpadły w moje ręce!” – zaśmiała się okrutnie. Zamknęła Jasia w klatce, a Małgosi kazała ciężko pracować i karmić brata słodkościami, by przytył i stał się smacznym daniem.\n\nSprytna Małgosia wymyśliła plan. Gdy wiedźma chciała sprawdzić, czy Jaś już przytył, chłopiec zamiast palca podsuwał jej gałązkę, przez co starucha myślała, że nadal jest chudy. Rozgniewana czarownica straciła cierpliwość i postanowiła natychmiast wrzucić chłopca do pieca. Poprosiła więc Małgosię, aby przygotowała piec do rozpalenia. Dziewczynka udawała, że nie wie, jak to zrobić, i poprosiła wiedźmę, by sama to sprawdziła. Kiedy ta pochyliła się nad ogniem, Małgosia pchnęła ją z całych sił do środka i zamknęła drzwiczki.\n\nRodzeństwo odnalazło w chatce wiedźmy kufer pełen złota i klejnotów, które zabrało ze sobą. Z pomocą małych ptaszków i leśnych zwierząt bezpiecznie wrócili do ojca, który przywitał ich z wielką radością. Dzięki zdobytemu skarbowi rodzina już nigdy nie cierpiała głodu, a Jaś i Małgosia żyli długo i szczęśliwie."
+  }
 "
 ##############################
 
@@ -535,9 +561,9 @@ if __name__ == "__main__":
 "
 {
     "id": 2,
-    "title": "Kaczka Dziwaczka",
-    "author": "Jan Brzechwa",
-    "content": "Nad rzeczką opodal krzaczka mieszkała kaczka dziwaczka, lecz zamiast trzymać się rzeczki robiła piesze wycieczki. Raz poszła więc do fryzjera, poproszę o kilo sera. Tuż obok była apteka, poproszę mleka pięć deka. Z apteki poszła do praczki kupować pocztowe znaczki. Gryzły się kaczki okropnie, a niech tę kaczkę gęś kopnie. Znosiła jaja na twardo i miała czubek z kokardą. A przy tym na przekór kaczkom czesała się wykałaczką. Kupiła raz w kiosku paczkę, by pisać list drobnym maczkiem. Zjadając tasiemkę starą mówiła, że to makaron. A gdy połknęła dwa złote, mówiła, że odda potem. Martwiły się inne kaczki, co będzie z takiej dziwaczki. Aż wreszcie znalazł się kupiec: na obiad można ją upiec. Pan kucharz kaczkę starannie piekł jak należy w brytfannie, lecz zemdlał obiad podając, bo z kaczki zrobił się zając. W dodatku cały w buraczkach, taka to była dziwaczka."
+    "title": "Trzy Małe Świnki",
+    "author": "Angielska Baśń Ludowa",
+    "content": "Dawno, dawno temu trzy małe świnki postanowiły wybudować sobie domy, aby chronić się przed złym wilkiem. Pierwsza świnka zbudowała swój dom z lekkiej słomy, ponieważ chciała szybko skończyć i mieć czas na zabawę. Druga świnka wybrała drewno, bo uważała, że budowanie z niego nie zajmie dużo czasu, a dom będzie solidniejszy niż ze słomy. Trzecia świnka zbudowała swój dom z cegieł, co wymagało dużo pracy, ale była pewna, że jej dom będzie najbezpieczniejszy. Pewnego dnia zły wilk przyszedł do domu pierwszej świnki. 'Wypuść mnie, albo dmuchnę i zdmuchnę twój dom!' - zawołał wilk. Świnka przestraszona schowała się w środku, ale wilk dotrzymał słowa i zdmuchnął dom ze słomy. Pierwsza świnka uciekła do domu drugiej. Wilk nie dał za wygraną i dotarł do domu z drewna. 'Wypuść mnie, albo dmuchnę i zdmuchnę twój dom!' - zawołał wilk. Dmuchnął mocno i dom się rozpadł, więc obie świnki uciekły do domu trzeciej. Gdy wilk dotarł do domu z cegieł, próbował dmuchać i dmuchać, ale dom ani drgnął. Zły wilk spróbował wejść przez komin, lecz trzecia świnka przygotowała gorący kocioł z wodą. Gdy wilk zsunął się do środka, wpadł prosto do garnka i uciekł, przysięgając, że nigdy więcej nie będzie próbował złapać trzech świnek. Świnki żyły długo i szczęśliwie, ciesząc się bezpieczeństwem w swoim solidnym domu z cegieł."
 }
 "
 ##############################
@@ -547,8 +573,8 @@ if __name__ == "__main__":
 "
 {
     "id": 3,
-    "title": "Na Straganie",
-    "author": "Jan Brzechwa",
+    "title": "Czerwony Kapturek",
+    "author": "Charles’a Perraulta",
     "content": "Dawno dawno temu na skraju lasu mieszkała mała dziewczynka. Ponieważ nosiła zawsze czerwoną czapeczkę, wszyscy nazywali ją Czerwonym Kapturkiem. Pewnego dnia mama Czerwonego Kapturka wysłała ją do chorej babci, która mieszkała w samym środku lasu. Dziewczynka wzięła koszyk z lekarstwem i smakołykami, pomachała mamie  i ruszyła w drogę. Czerwony Kapturek szedł szybko leśną ścieżką, aż dostrzegł polankę pełną kwiatów. Dziewczynce przypomniało się, że przecież babcia uwielbia kwiaty i z pewnością ucieszy się z bukietu. „Wprawdzie mama przestrzegała, żebym szła drogą prosto do babci i nie zbaczała z drogi. Ale przecież nic się nie stanie, jak zatrzymam się na chwilę tu na tej    polanie, by zerwać kwiatki.” - pomyślał Czerwony Kapturek.  Dziewczynka zeszła ze ścieżki i poszła w kierunku polany. Zaczęła zrywać kwiaty i układać bukiet. „Są takie piękne! I tak cudownie pachną.” - westchnęła dziewczynka. Im dalej szła, tym kwiaty były piękniejsze. Nawet nie zauważyła, kiedy oddaliła się od drogi i od polany. Dopiero, gdy bukiet był gotowy, postanowiła zawrócić. Obróciła się na pięcie, a tu nagle stanął przed nią wilk. „Dzień dobry, dziewczynko!” - powiedział grzecznie wilk, czym od razu wzbudził zaufanie Czerwonego Kapturka. „Dokąd to tak podążasz?” - zapytał. „Niosę lekarstwo dla mojej chorej babci.” - powiedział Czerwony Kapturek, a potem dziewczynka dokładnie wyjaśniła, gdzie babcia mieszka. Wilk wyraził współczucie z powodu choroby babci, uśmiechnął się szelmowsko i pożegnał się. A potem zniknął tak szybko, jak się pojawił."
 }
 "
@@ -559,9 +585,21 @@ if __name__ == "__main__":
 "
 {
     "id": 4,
-    "title": "Rzepka",
-    "author": "Julian Tuwim",
-    "content": "Dawno temu, w zielonej, pełnej pierścieni i sprężyn krainie, żyli Sonic, Knuckles i Tails – trójka przyjaciół, którzy przeżywali niezliczone przygody. Pewnego dnia postanowili wybudować domy, by mieć gdzie odpoczywać po swoich wyścigach i misjach. Nie wiedzieli jednak, że w okolicy czai się ich odwieczny wróg – doktor Eggman, który, niczym wilk z klasycznej bajki, obmyślał niecny plan. Sonic, znany z szybkości, postanowił działać błyskawicznie i zbudował swój dom z tego, co miał pod ręką: kilka desek, sprężyny od robotów Eggmana i karton. “Wystarczy, by schronić się przed deszczem!” – stwierdził zadowolony z efektu, choć jego dom ledwo się trzymał. Knuckles, mistrz siły, wzniósł solidny bunkier z kamieni, drewnianych belek i stalowych płyt, pewny, że nic go nie ruszy. Tails zaś, wynalazca i mechanik, stworzył technologiczną fortecę z laserami, alarmami i zasilaniem opartym na pierścieniach. Kiedy budowa dobiegła końca, nadciągnął Eggman w swoim jajowatym statku, otoczony robotami. “Zdmuchnę wasze domy, jeśli nie zdradzicie mi źródła pierścieni!” – groził przez megafon. Przyjaciele ukryli się w swoich domach, ale Eggman szybko zrealizował swoje groźby. Lekki dom Sonica odleciał w kawałkach pod naporem robotów z wiatrakami. Sonic schronił się u Knucklesa, ale i jego kamienny bunkier nie wytrzymał ataku robotów laserowych, które rozkruszyły fundamenty. Obaj uciekli do fortecy Tailsa. W technologicznej bazie lisek uruchomił bariery ochronne i zakłócił systemy robotów Eggmana, które zaczęły się przegrzewać i psuć. Wściekły Eggman musiał się wycofać, a przyjaciele mogli odetchnąć z ulgą. Sonic i Knuckles przyznali, że ich domy były niewystarczające – tylko zaawansowana forteca Tailsa dała radę. Wspólnie postanowili połączyć swoje siły i zbudować wspólną bazę, która łączyła szybkość Sonica, wytrzymałość Knucklesa i technologię Tailsa. Tak powstał niezwyciężony dom, a przyjaciele zrozumieli, że współpraca jest najlepszą bronią przeciwko każdemu wrogowi, nawet takiemu jak Eggman. Razem mogli znów cieszyć się przygodami i ratowaniem świata."
+    "title": "Nowe szaty cesarza",
+    "author": "Hans Christian Andersen",
+    "content": "Dawno, dawno temu, w pewnym bogatym królestwie żył cesarz, który uwielbiał piękne stroje. Nadworny krawiec codziennie przynosił mu nowe szaty, a cesarz przyozdabiał się w kapelusze, peleryny i haftowane buty z najdalszych stron świata. Wszyscy mieszkańcy wiedzieli, że najważniejsze są dla niego wytworne ubrania, a nie mądre rządy czy sprawiedliwe prawa.\n\nPewnego dnia do stolicy przybyło dwóch nieznajomych, którzy podawali się za mistrzów tkactwa. Rozgłaszali na każdym kroku, że umieją utkać materiał tak lekki i delikatny, że mogliby go nosić tylko ludzie najmądrzejsi i najbardziej zasłużeni. Kto okazałby się niegodny swej funkcji, nie zobaczyłby nawet ani jednej niteczki.\n\nCesarz, usłyszawszy o tej niezwykłej tkaninie, zapragnął posiadać szaty uszyte właśnie z niej. Dwór zawrzał. Wszyscy chcieli pokazać, że są godni swego stanowiska, a nikt nie chciał przyznać się, że nie widzi materiału. Dlatego też cesarz przydzielił tkaczom specjalną komnatę w pałacu, gdzie rzekomo pracowali dniami i nocami. Otrzymywali złoto, jedwab i najdroższe nici. Oni jednak chowali wszystkie skarby, a na krosnach nie było nawet jednej nitki.\n\nWreszcie cesarz zapragnął sprawdzić postępy w pracy. Wysłał więc swego wiernego doradcę, aby zobaczył tkaninę. Doradca obawiał się, że może jej nie dostrzec i wyjdzie na głupca. Gdy wszedł do komnaty, nie zobaczył nic. Ale ze strachu przed utratą stanowiska głośno zachwycał się barwami i wzorem, których oczywiście wcale nie widział.\n\nPlotki o cudownym materiale rozeszły się szeroko. W dniu wielkiej parady cesarz chciał zaprezentować swemu ludowi nowe szaty. Dwaj oszuści odegrali piękny spektakl: niby podawali płaszcz, kapelusz i ozdobne buty – wszystko z magicznej tkaniny. Cesarz, sam przekonany, że jeśli nic nie dostrzeże, okaże się niegodny tronu, stanął przed zwierciadłem i zachwycał się niewidzialną kreacją. Dworanie zaś, bojąc się wyjść na głupców, również głośno podziwiali jego strój.\n\nRozpoczęła się parada. Grajkowie przygrywali skoczne melodie, na ulicach stały stragany z kolorowymi wstążkami i balonikami. Tłum wiwatował na cześć cesarza, jednak wielu ludzi szeptało po cichu, że nie widzi żadnej tkaniny. Wtem pewien mały chłopiec krzyknął: „Przecież on jest zupełnie nagi!”\n\nW jednej chwili wszyscy zrozumieli, że dali się oszukać. Jedynie niewinny głos dziecka odważył się powiedzieć prawdę. Gwar wśród ludzi narósł, a cesarz poczuł, że policzki pieką go z wstydu. Chciałby zapaść się pod ziemię, ale co miał zrobić w obecności całego ludu? Mimo wszystko kroczył dalej, wyprostowany, jakby chciał zachować resztki królewskiej dumy.\n\nOszuści zbiegli z królestwa, zabierając wszystkie bogactwa, które cesarz im powierzył. Od tego dnia w pałacu zaczęto przypominać, że ważniejsze od pięknych ubrań są rozum, uczciwość i prawda. A cesarz nauczył się, że nie można rządzić wyłącznie próżnością i bojaźnią – bo czasem tylko dziecko dostrzega to, czego dorośli nie chcą lub boją się zobaczyć."
+}
+"
+##############################
+
+##############################
+/Users/szymonpaluch/Projects/AI/voicecloning/stories/5.json:
+"
+{
+    "id": 5,
+    "title": "Królewna Śnieżka",
+    "author": "Braci Grimm",
+    "content": "Dawno, dawno temu, w dalekim królestwie żyła piękna królewna o tak jasnej cerze, że wszyscy nazywali ją Śnieżką. Jej macocha, zła królowa, spędzała wiele godzin przed magicznym zwierciadłem, pytając je, kto jest najpiękniejszy na świecie. Kiedy magiczne lustro wskazało Śnieżkę, królowa poczuła, że zagraża to jej własnej urodzie i rozkazała królewskiemu myśliwemu pozbyć się pasierbicy.\n\nMyśliwy, poruszony niewinnością Śnieżki, nie mógł jednak wykonać okrutnego rozkazu. Pozwolił królewnie uciec w głąb lasu, ostrzegając ją, by nigdy nie wracała do pałacu. Wystraszona i zmęczona wędrówką, Śnieżka dotarła do maleńkiego domku ukrytego pośród starych drzew. Była tak głodna i spragniona, że zaczęła szukać wody i pożywienia. Kiedy weszła do chatki, zauważyła siedem małych krzesełek i stół zastawiony miniaturową zastawą.\n\nTen domek należał do siedmiu krasnoludków, którzy właśnie ciężko pracowali w pobliskiej kopalni kryształów. Każdy z nich miał własne, wyjątkowe zadanie: wesoły Rubinek śpiewał piosenki i mobilizował wszystkich do pracy, roztropny Szmaragdek planował kolejność zadań, a kryształowy mistrz Diamentek dbał o to, by każdy znaleziony kamień był pięknie oszlifowany. Gdy krasnoludki wróciły do domu i zobaczyły wystraszoną Śnieżkę, postanowiły się nią zaopiekować.\n\nTymczasem zła królowa, za pomocą czarów i magicznego zwierciadła, wciąż obserwowała poczynania Śnieżki. Przebrana za staruszkę, postanowiła ją otruć zatrutym jabłkiem. Udało jej się zwieść królewnę, która po jednym kęsie upadła bez tchu. Zrozpaczeni krasnoludkowie ułożyli Śnieżkę w szklanej trumnie przy chacie, otoczonej kwitnącym ogrodem, który zdążyła wcześniej wypielęgnować.\n\nPewnego dnia w te strony przejeżdżał młody książę. Usłyszawszy historię o dobrej królewnie, chciał ją zobaczyć. Gdy tylko ujrzał Śnieżkę, poprosił krasnoludki o pozwolenie, aby przenieść ją na królewski zamek i szukać sposobu na jej przebudzenie. Kiedy trumnę podnoszono, zatruty kawałek jabłka wypadł z ust Śnieżki, a ona otworzyła oczy. Krasnoludki z radością zorganizowały wielką ucztę na cześć ocalonej królewny. Książę zaś zaprosił ją, by razem wrócili do jego królestwa i żyli tam długo i szczęśliwie.\n\nA co stało się z złą królową? W momencie, gdy Śnieżka odzyskała przytomność, magiczne lustro straciło swoją moc. Zła królowa, pozbawiona czarodziejskich mocy i władzy, musiała opuścić królestwo. I tak nikt nigdy więcej nie usłyszał o jej złych knowaniach.\n\nW ten sposób w królestwie zapanował pokój, a Królewna Śnieżka cieszyła się szczęściem, którym dzieliła się ze swoimi nowymi przyjaciółmi - krasnoludkami, oraz z całym ludem królestwa."
 }
 "
 ##############################
@@ -577,8 +615,8 @@ if __name__ == "__main__":
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- For legacy IE support -->
 
     <!-- Primary Meta Tags -->
-    <title>StoryVoice | Magical AI-Powered Bedtime Stories</title>
-    <meta name="description" content="Create personalized bedtime stories in your own voice with StoryVoice. Perfect for parents and children to enjoy magical moments together.">
+    <title>DawnoTemu | Magiczne Baśnie na Dobranoc</title>
+    <meta name="description" content="Twórz spersonalizowane bajki na dobranoc swoim głosem. DawnoTemu to idealne miejsce dla rodziców i dzieci, by wspólnie odkrywać magiczne historie przed snem.">
 
     <!-- Favicon Suite (Modern Approach) -->
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
@@ -591,7 +629,7 @@ if __name__ == "__main__":
     <!-- PWA/Safari Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="StoryVoice">
+    <meta name="apple-mobile-web-app-title" content="DawnoTemu">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/web-app-manifest-192x192.png">
     <meta name="theme-color" content="#D4C1EC">
@@ -617,12 +655,12 @@ if __name__ == "__main__":
 
      <!-- Social Media Meta Tags -->
      <meta property="og:type" content="website">
-     <meta property="og:title" content="StoryVoice | Magical AI-Powered Bedtime Stories">
-     <meta property="og:description" content="Create personalized bedtime stories in your own voice with StoryVoice. Perfect for parents and children to enjoy magical moments together.">
+     <meta property="og:title" content="DawnoTemu | Magiczne Baśnie na Dobranoc">
+     <meta property="og:description" content="Twórz spersonalizowane bajki na dobranoc swoim głosem. DawnoTemu to idealne miejsce dla rodziców i dzieci, by wspólnie odkrywać magiczne historie przed snem.">
      <meta property="og:image" content="/images/social-preview.jpg">
-     <meta property="og:url" content="https://storyvoice.example.com">
+     <meta property="og:url" content="https://dawnotemu.example.com">
      <meta name="twitter:card" content="summary_large_image">
-     <meta name="twitter:site" content="@StoryVoiceApp">
+     <meta name="twitter:site" content="@DawnoTemu">
 
     <!-- Critical CSS -->
     <style>
@@ -719,10 +757,11 @@ if __name__ == "__main__":
             z-index: 100;
             height: 8rem; /* 96px */
             position: fixed;
-            bottom: -8rem; /* Start hidden */
+            bottom: -8rem; /* Initially hidden */
             left: 0;
             right: 0;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
         }
 
         #activeControls {
@@ -872,6 +911,8 @@ if __name__ == "__main__":
         .sticky-header {
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
             padding-top: var(--safe-area-top);
+            transform: translateY(-100%); /* Initially hidden */
+            transition: transform 0.3s ease-out;
         }
 
         .mobile-nav {
@@ -976,6 +1017,71 @@ if __name__ == "__main__":
             transform: translateY(0);
             opacity: 1;
         }
+
+        /* Slide Down for Sticky Header */
+        @keyframes stickyHeaderSlideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Slide Up for Audio Controls */
+        @keyframes audioControlsSlideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Add slide-in classes */
+        .sticky-header-slide-down {
+            animation: stickyHeaderSlideDown 0.5s ease-out forwards;
+        }
+
+        .audio-controls-slide-up {
+            animation: audioControlsSlideUp 0.5s ease-out forwards;
+        }
+
+        /* Add slide-out animations (optional for transitions to hide) */
+        @keyframes stickyHeaderSlideUp {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes audioControlsSlideDown {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Add slide-out classes */
+        .sticky-header-slide-up {
+            animation: stickyHeaderSlideUp 0.5s ease-in forwards;
+        }
+
+        .audio-controls-slide-down {
+            animation: audioControlsSlideDown 0.5s ease-in forwards;
+        }
     </style>
 
     <!-- Non-critical CSS -->
@@ -1000,36 +1106,40 @@ if __name__ == "__main__":
     <!-- Splash Screen -->
     <div id="splashScreen" class="splash-screen fixed inset-0 flex flex-col items-center justify-center z-50">
         <div>
-            <img src="/logo.png" alt="StoryVoice" class="size-16">
+            <img src="/logo.png" alt="DawnoTemu" class="size-16">
         </div>
-        <h1 class="logo-font text-4xl font-bold text-white mt-4">StoryVoice</h1>
-        <p class="text-white/90 mt-2">Where bedtime stories come alive</p>
+        <h1 class="logo-font text-4xl font-bold text-white mt-4">DawnoTemu</h1>
+        <p class="text-white/90 mt-2 text-center">Tu, baśnie nabierają<br />czarodziejskiej mocy</p>
     </div>
 
     <!-- Main App -->
     <div class="container mx-auto px-4 pb-16 max-w-md" style="display: none;" id="appContainer">
-        <div class="sticky-header fixed top-0 left-0 right-0 bg-white z-[500]">
+        <div class="sticky-header fixed top-0 left-0 right-0 bg-white z-[500] hidden">
             <div class="container mx-auto px-4 max-w-md">
                 <div class="flex items-center justify-between h-[var(--header-height)]">
                     <!-- Left Side (Back Button) -->
                     <div class="flex-grow flex items-center basis-0 justify-start">
                         <button id="headerBackButton" onclick="showCloneScreen()" 
                                 class="hidden items-center gap-2 text-peach hover:text-peach/80 transition-colors">
-                            
-                            <span>Re-Clone</span>
+                                <div class="flex items-center">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                    <span class="text-s  group-hover:text-peach transition-colors">Reset</span>
+                                </div>
                         </button>
                     </div>
         
                     <!-- Center Title -->
                     <h1 class="text-xl font-bold text-gray-800 logo-font flex-shrink-0 px-4">
-                        StoryVoice
+                        DawnoTemu
                     </h1>
         
                     <!-- Right Side (Avatar) -->
                     <div class="flex-grow flex items-center basis-0 justify-end">
                         <div class="w-8 h-8 rounded-full bg-[var(--lavender)] flex items-center justify-center 
                                   text-white text-sm font-medium">
-                            U
+                            <img src="/logo.png" alt="DawnoTemu" class="">
                         </div>
                     </div>
                 </div>
@@ -1039,18 +1149,18 @@ if __name__ == "__main__":
         <div id="cloneScreen" class="screen">
             <div class="bg-white rounded-2xl shadow-sm p-4 my-4">
                 <div class="flex items-center mb-6">
-                    <h1 class="text-2xl font-bold text-gray-800 logo-font">Create Your Voiceprint</h1>
+                    <h1 class="text-2xl font-bold text-gray-800 logo-font m-auto">DawnoTemu</h1>
                 </div>
                 
                 <div class="space-y-5">
                     <div class="text-center p-6 bg-peach/10 rounded-xl">
-                        <div class="text-4xl mb-4">👩👧</div>
-                        <h3 class="text-lg font-medium text-gray-700 mb-2">Record Your Voice</h3>
-                        <p class="text-sm text-gray-500 mb-4">Read your child's favorite story aloud</p>
+                        <div class="text-4xl mb-4">👦👧</div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">Stwórz próbkę swojego głosu</h3>
+                        <p class="text-sm text-gray-500 mb-4">Przeczytaj na głos fragment wiersza,<br /> który zaraz zobaczysz</p>
                         <button onclick="startRecording()" 
                                 class="record-button w-full bg-peach hover:bg-peach/90 text-white px-6 py-4 rounded-xl 
                                        font-medium text-lg transition-all">
-                            Start Recording
+                            Rozpocznij nagrywanie
                         </button>
                     </div>
 
@@ -1059,7 +1169,7 @@ if __name__ == "__main__":
                             <div class="w-full border-t border-gray-200"></div>
                         </div>
                         <div class="relative flex justify-center">
-                            <span class="bg-white px-2 text-sm text-gray-400">or</span>
+                            <span class="bg-white px-2 text-sm text-gray-400">lub</span>
                         </div>
                     </div>
 
@@ -1068,7 +1178,7 @@ if __name__ == "__main__":
                         <button id="uploadButton" 
                                 class="w-full bg-lavender hover:bg-peach/90 text-white px-6 py-4 rounded-xl 
                                 font-medium text-lg transition-all">
-                            <span>Upload Voice Sample</span>
+                            <span>Prześlij plik audio</span>
                             <input type="file" id="audioFile" accept=".mp3,.wav" class="hidden" />
                         </button>
                     </div>
@@ -1095,7 +1205,7 @@ if __name__ == "__main__":
                         <path fill="currentColor" class="opacity-75" 
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                     </svg>
-                    <p class="text-gray-600 text-sm font-medium">Loading stories...</p>
+                    <p class="text-gray-600 text-sm font-medium">Ładowanie...</p>
                 </div>
         
                 <!-- Stories Container -->
@@ -1111,7 +1221,7 @@ if __name__ == "__main__":
         <div class="container mx-auto px-4 max-w-md h-full">
             <!-- Empty State -->
             <div id="emptyState" class="h-full flex items-center justify-center text-gray-400 text-sm font-medium">
-                ✨ Please select a story to begin
+                ✨ Wybierz bajkę, by rozpocząć
             </div>
     
             <!-- Active Controls -->
@@ -1166,14 +1276,14 @@ if __name__ == "__main__":
     <!-- Confirmation Modal -->
     <div id="confirmModal" class="fixed inset-0 bg-black/50 z-[1000] hidden items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
-            <h3 class="text-lg font-semibold mb-4">Confirm Re-cloning</h3>
-            <p class="text-gray-600 mb-6">This will permanently delete your current voice model and all generated stories. Are you sure?</p>
+            <h3 class="text-lg font-semibold mb-4">Na pewno zaczynamy od nowa?</h3>
+            <p class="text-gray-600 mb-6"> Usuniemy Twój obecny model głosu i wszystkie dotychczas powstałe bajki. Czy na pewno chcesz kontynuować?</p>
             <div class="flex justify-end gap-3">
                 <button id="confirmCancel" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                    Cancel
+                    Anuluj
                 </button>
                 <button id="confirmDelete" class="px-4 py-2 bg-peach text-white rounded-lg hover:bg-peach/90">
-                    Delete & Re-clone
+                    Usuń i nagraj ponownie
                 </button>
             </div>
         </div>
@@ -1187,7 +1297,7 @@ if __name__ == "__main__":
                     <svg class="w-6 h-6 text-peach" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
                     </svg>
-                    Read following text
+                    Dodaj Swój Głos
                 </h3>
             </div>
     
@@ -1233,7 +1343,7 @@ if __name__ == "__main__":
                         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" class="opacity-25"/>
                         <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                     </svg>
-                    <p class="text-gray-600">Processing your voice sample...</p>
+                    <p class="text-gray-600">Trwa Analizowanie Twojego Głosu...</p>
                 </div>
             </div>
     
@@ -1246,7 +1356,7 @@ if __name__ == "__main__":
                     <div id="recordStatus" class="text-sm text-center mb-2"></div>
                     <button id="cancelRecording" 
                             class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
-                        Cancel Recording
+                        Przerwij nagrywanie
                     </button>
                 </div>
                 <audio id="audioPreview" style="display: none;"></audio>
@@ -1309,6 +1419,7 @@ function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active-screen');
     });
+
     document.getElementById(screenId).classList.add('active-screen');
     
     // Update header state
@@ -1322,7 +1433,28 @@ function showScreen(screenId) {
         document.getElementById('audioControls').style.bottom = '-8rem';
         hideAudioControls();
     }
-    
+
+    const stickyHeader = document.querySelector('.sticky-header');
+    const audioControls = document.getElementById('audioControls');
+
+    if (screenId === 'synthesisScreen') {
+        // Slide down the sticky header
+        stickyHeader.classList.remove('hidden');
+        stickyHeader.classList.remove('sticky-header-slide-up');
+        stickyHeader.classList.add('sticky-header-slide-down');
+
+        // Slide up the audio controls
+        audioControls.classList.remove('audio-controls-slide-down');
+        audioControls.classList.add('audio-controls-slide-up');
+    } else {
+        // Slide up the sticky header (hide)
+        stickyHeader.classList.remove('sticky-header-slide-down');
+        stickyHeader.classList.add('sticky-header-slide-up');
+
+        // Slide down the audio controls (hide)
+        audioControls.classList.remove('audio-controls-slide-up');
+        audioControls.classList.add('audio-controls-slide-down');
+    }
 window.scrollTo(0, 0);
 }
 
@@ -1483,17 +1615,6 @@ async function startRecording() {
 }
 
 
-function startProgressAnimation() {
-    let startTime = Date.now();
-    const updateProgress = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = (elapsed / 30000) * 100;
-        document.querySelector('.progress-bar').style.width = `${progress}%`;
-        if (progress < 100) requestAnimationFrame(updateProgress);
-    };
-    requestAnimationFrame(updateProgress);
-}
-
 // Audio Upload
 document.getElementById('audioFile').addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -1589,7 +1710,7 @@ async function renderStories() {
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex-1">
                         <h3 class="text-lg font-semibold">${story.title}</h3>
-                        <p class="text-gray-600 text-sm">by ${story.author}</p>
+                        <p class="text-gray-600 text-sm">Autor: ${story.author}</p>
                     </div>
                     <button onclick="handleStoryClick(${story.id})" 
                             id="story-${story.id}" 
@@ -1675,10 +1796,21 @@ async function generateStory(storyId) {
             })
         });
 
-        if (!response.ok) throw new Error('Generation failed');
-        
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        audioReady = await checkAudioExists(storyId);
+        if (!response.ok) {
+            console.warn('Synthesis request failed. Proceeding to poll for audio availability.');
+        }
+
+        // Start polling for audio readiness
+        let audioReady = false;
+        const maxPollingTime = 2 * 60 * 1000; // 2 minutes
+        const pollingInterval = 5000; // 5 seconds
+        const startTime = Date.now();
+
+        while (!audioReady && Date.now() - startTime < maxPollingTime) {
+            await new Promise(resolve => setTimeout(resolve, pollingInterval));
+            audioReady = await checkAudioExists(storyId);
+        }
+
         if (!audioReady) throw new Error('Generation timeout');
         
         showStatus('Audio ready!', 'success');
@@ -1687,85 +1819,92 @@ async function generateStory(storyId) {
     }
 }
 
-async function playStory(storyId) {
-    showAudioControls();
-    const audioElement = document.getElementById('storyAudio');
-    const playIcon = document.getElementById('playIcon');
-    const pauseIcon = document.getElementById('pauseIcon');
-    
-    try {
-        showAudioControls();
-        showStatus('Loading audio...', 'info');
+const audioElement = document.getElementById('storyAudio');
+const playIcon = document.getElementById('playIcon');
+const pauseIcon = document.getElementById('pauseIcon');
+const playPauseButton = document.getElementById('playPause');
+const rewindButton = document.getElementById('rewind');
+const forwardButton = document.getElementById('forward');
+const progressSlider = document.getElementById('progress');
+const durationDisplay = document.getElementById('duration');
+const currentTimeDisplay = document.getElementById('currentTime');
 
-        const audioUrl = `${API_BASE_URL}/audio/${currentVoiceId}/${storyId}.mp3?t=${Date.now()}`;
-        audioElement.src = audioUrl;
+// Update UI on play, pause, and when audio ends
+audioElement.addEventListener('play', () => {
+    playIcon.classList.add('hidden');
+    pauseIcon.classList.remove('hidden');
+});
+audioElement.addEventListener('pause', () => {
+    playIcon.classList.remove('hidden');
+    pauseIcon.classList.add('hidden');
+});
+audioElement.addEventListener('ended', () => {
+    playIcon.classList.remove('hidden');
+    pauseIcon.classList.add('hidden');
+});
 
-        audioElement.addEventListener('loadedmetadata', () => {
-            document.getElementById('duration').textContent = formatTime(audioElement.duration);
-        });
-
-        audioElement.addEventListener('timeupdate', () => {
-            document.getElementById('currentTime').textContent = formatTime(audioElement.currentTime);
-            document.getElementById('progress').value = 
-                (audioElement.currentTime / audioElement.duration) * 100 || 0;
-        });
-
-        audioElement.addEventListener('play', () => {
-            playIcon.classList.add('hidden');
-            pauseIcon.classList.remove('hidden');
-        });
-
-        audioElement.addEventListener('pause', () => {
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-        });
-
-        audioElement.addEventListener('ended', () => {
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-        });
-
-        // Control event listeners
-        const playPauseButton = document.getElementById('playPause');
-
-        ['click', 'touchstart'].forEach(eventType => {
-            playPauseButton.addEventListener(eventType, (e) => {
-                e.preventDefault(); // Prevent double-tap zoom
-                if (audioElement.paused) {
-                    audioElement.play();
-                } else {
-                    audioElement.pause();
-                }
-            });
-        });
-
-        document.getElementById('rewind').addEventListener('click', () => {
-            audioElement.currentTime = Math.max(0, audioElement.currentTime - 5);
-        });
-
-        document.getElementById('forward').addEventListener('click', () => {
-            audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 5);
-        });
-
-        document.getElementById('progress').addEventListener('input', (e) => {
-            const seekTime = (e.target.value / 100) * audioElement.duration;
-            audioElement.currentTime = seekTime;
-        });
-
-        document.getElementById('progress').addEventListener('touchstart', (e) => {
-            e.stopPropagation(); // Prevent interfering with parent elements
-        });
-
-        // Auto-play after metadata is loaded
-        audioElement.addEventListener('loadedmetadata', () => {
-            audioElement.play().catch(error => {
-                showError('Auto-play failed. Click the play button.');
-            });
-        });
-
-    } catch (error) {
-        showError(`Playback failed: ${error.message}`);
+// Update current time and progress slider as the audio plays
+audioElement.addEventListener('timeupdate', () => {
+    currentTimeDisplay.textContent = formatTime(audioElement.currentTime);
+    if (audioElement.duration) {
+    progressSlider.value = (audioElement.currentTime / audioElement.duration) * 100;
     }
+});
+
+// Update duration display when metadata is loaded
+audioElement.addEventListener('loadedmetadata', () => {
+    durationDisplay.textContent = formatTime(audioElement.duration);
+});
+
+// Play/Pause button (use a single event type to avoid duplicate triggers)
+playPauseButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (audioElement.paused) {
+    audioElement.play();
+    } else {
+    audioElement.pause();
+    }
+});
+
+// Rewind: go back 5 seconds
+rewindButton.addEventListener('click', () => {
+    audioElement.currentTime = Math.max(0, audioElement.currentTime - 5);
+});
+
+// Forward: go forward 5 seconds
+forwardButton.addEventListener('click', () => {
+    audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 5);
+});
+
+// Progress slider: allow seeking within the audio track
+progressSlider.addEventListener('input', (e) => {
+    const seekTime = (e.target.value / 100) * audioElement.duration;
+    audioElement.currentTime = seekTime;
+});
+
+// Prevent touchstart on the progress slider from interfering with other events
+progressSlider.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+});
+
+async function playStory(storyId) {
+showAudioControls();
+showStatus('Loading audio...', 'info');
+
+// Build the audio URL with a cache-busting timestamp
+const audioUrl = `${API_BASE_URL}/audio/${currentVoiceId}/${storyId}.mp3?t=${Date.now()}`;
+audioElement.src = audioUrl;
+
+// Use a one-time loadedmetadata listener to auto-play when ready
+const onLoaded = () => {
+    // Metadata is loaded and duration is updated via initializeAudioControls
+    audioElement.play().catch(error => {
+    showError('Auto-play failed. Please click the play button.');
+    });
+    // Remove this listener so it only runs once per source change
+    audioElement.removeEventListener('loadedmetadata', onLoaded);
+};
+audioElement.addEventListener('loadedmetadata', onLoaded);
 }
 
 function stopAudio() {
@@ -1852,10 +1991,6 @@ function showStatus(message, type) {
             toast.classList.add('hidden');
         }, 300);
     }, 3000);
-}
-
-function showError(message) {
-    showStatus(message, 'error');
 }
 
 function showError(message) {
@@ -1965,35 +2100,27 @@ function cleanupMediaResources() {
     audioChunks = [];
 }
 
-// Update the cancel recording handler
-document.getElementById('cancelRecording').addEventListener('click', () => {
-    isCanceled = true;
-    if (mediaRecorder?.state === 'recording') {
-        mediaRecorder.stop();
-        clearTimeout(recordingTimeout);
-        clearInterval(progressInterval);
-    }
-    cleanupMediaResources();
-    closeClonePrompt();
-    showStatus('Recording canceled', 'info');
-});
-
 document.getElementById('uploadButton').addEventListener('click', () => {
     document.getElementById('audioFile').click();
 });
 
 // Register Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          console.log('ServiceWorker registration successful');
-        })
-        .catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js?v=1.5') // Update this version for each deployment
+      .then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if(newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+              window.location.reload();
+            }
+          });
         });
-    });
-  }
+      });
+    
+    // Check for updates every time the page loads
+    navigator.serviceWorker.ready.then(reg => reg.update());
+}
   
   // Install Prompt
   let deferredPrompt;
@@ -2017,55 +2144,6 @@ if ('serviceWorker' in navigator) {
     }
   }
 
-// let touchStartX = 0;
-// let touchEndX = 0;
-
-// document.addEventListener('touchstart', e => {
-// touchStartX = e.changedTouches[0].screenX;
-// });
-
-// document.addEventListener('touchend', e => {
-// touchEndX = e.changedTouches[0].screenX;
-// if (Math.abs(touchEndX - touchStartX) > 50) { // 50px threshold
-//     if (touchEndX < touchStartX) {
-//         // Swipe left - next story
-//         navigateStories('next');
-//     } else {
-//         // Swipe right - previous story
-//         navigateStories('prev');
-//     }
-// }
-// });
-
-function navigateStories(direction) {
-    const stories = Array.from(document.querySelectorAll('.story-item'));
-    
-    // If no story is selected, select the first one
-    if (!selectedStoryId) {
-        if (stories.length > 0) {
-            const firstStoryId = stories[0].dataset.storyId;
-            handleStoryClick(firstStoryId);
-        }
-        return;
-    }
-
-    // Find the index of the currently selected story
-    const currentIndex = stories.findIndex(story => story.dataset.storyId === selectedStoryId.toString());
-
-    // Determine the next or previous story based on the direction
-    let newIndex;
-    if (direction === 'next') {
-        newIndex = (currentIndex + 1) % stories.length; // Wrap around to the first story if at the end
-    } else if (direction === 'prev') {
-        newIndex = (currentIndex - 1 + stories.length) % stories.length; // Wrap around to the last story if at the beginning
-    } else {
-        return; // Invalid direction
-    }
-
-    // Select the new story
-    const newStoryId = stories[newIndex].dataset.storyId;
-    handleStoryClick(newStoryId);
-}
 
 function nativeTapFeedback() {
     if ('vibrate' in navigator) {
@@ -2098,8 +2176,8 @@ if (isAndroid) {
 /Users/szymonpaluch/Projects/AI/voicecloning/static/manifest.json:
 "
 {
-  "name": "StoryVoice",
-  "short_name": "StoryVoice",
+  "name": "DawnoTemu",
+  "short_name": "DawnoTemu",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F8F9FD",
@@ -2126,7 +2204,8 @@ if (isAndroid) {
 ##############################
 /Users/szymonpaluch/Projects/AI/voicecloning/static/sw.js:
 "
-const CACHE_NAME = 'storyvoice-v1';
+const CACHE_NAME = 'storyvoice-' + (new URL(self.location.href).searchParams.get('v') || '1');
+
 const ASSETS = [
   '/',
   '/index.html',
@@ -2141,6 +2220,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting()) // Activate immediately
   );
 });
 
@@ -2154,9 +2234,8 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(key => key !== CACHE_NAME)
-        .map(key => caches.delete(key))
-    ))
+      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+    )).then(() => self.clients.claim()) // Control all pages
   );
 });
 "
