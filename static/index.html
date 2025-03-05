@@ -1,21 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- For legacy IE support -->
 
+    <title>DawnoTemu | Twój głos, ich ulubione bajki</title>
+    <meta name="description" content="Pozwól dziecku słuchać bajek opowiadanych Twoim głosem, nawet gdy nie możesz być przy nim. Personalizowane baśnie na dobranoc z DawnoTemu.">
+    
     <!-- Primary Meta Tags -->
-    <title>DawnoTemu | Magiczne Baśnie na Dobranoc</title>
+    <title>DawnoTemu | Twój głos, ich ulubione bajki</title>
     <meta name="description" content="Twórz spersonalizowane bajki na dobranoc swoim głosem. DawnoTemu to idealne miejsce dla rodziców i dzieci, by wspólnie odkrywać magiczne historie przed snem.">
 
+
     <!-- Favicon Suite (Modern Approach) -->
-    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     <link rel="icon" href="/icons/favicon.ico" sizes="any">
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
     <link rel="shortcut icon" href="/icons/favicon.ico" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     <link rel="mask-icon" href="/icons/favicon.svg" color="#D4C1EC">
+
 
     <!-- PWA/Safari Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -27,710 +31,1955 @@
     <meta name="msapplication-TileColor" content="#D4C1EC">
 
     <!-- Preload Critical Resources -->
-    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
-    <link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     
     
     <!-- Preconnect to External Domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://story-voice-47d650d68bd6.herokuapp.com">
-    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
 
-     <!-- Font Loading with Fallback -->
-     <noscript>
+    <!-- Font Loading with Fallback -->
+    <noscript>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;600&display=swap&display=swap">
-        <link rel="stylesheet" href="/styles.css">
     </noscript>
 
-     <!-- Social Media Meta Tags -->
-     <meta property="og:type" content="website">
-     <meta property="og:title" content="DawnoTemu | Magiczne Baśnie na Dobranoc">
-     <meta property="og:description" content="Twórz spersonalizowane bajki na dobranoc swoim głosem. DawnoTemu to idealne miejsce dla rodziców i dzieci, by wspólnie odkrywać magiczne historie przed snem.">
-     <meta property="og:image" content="/images/social-preview.jpg">
-     <meta property="og:url" content="https://dawnotemu.example.com">
-     <meta name="twitter:card" content="summary_large_image">
-     <meta name="twitter:site" content="@DawnoTemu">
+    <!-- Social Media Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="DawnoTemu | Twój głos, ich ulubione bajki">
+    <meta property="og:description" content="Pozwól dziecku słuchać bajek opowiadanych Twoim głosem, nawet gdy nie możesz być przy nim. Personalizowane baśnie na dobranoc z DawnoTemu.">
+    <meta property="og:image" content="/images/social-preview.jpg">
+    <meta property="og:url" content="https://dawnotemu.example.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@DawnoTemu">
 
-    <!-- Critical CSS -->
     <style>
-        /* Custom CSS Variables */
-          :root {
+        :root {
             --peach: #FFB5A7;
+            --peach-dark: #FF9A8A;
             --lavender: #D4C1EC;
+            --lavender-dark: #B8A2DC;
             --mint: #B8E0D2;
             --soft-yellow: #FAE8B0;
-            --header-height: 4rem; /* 64px */
-            --safe-area-top: env(safe-area-inset-top, 0px);
-            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --text-dark: #2D3047;
+            --text-medium: #6C6F93;
+            --text-light: #9CA3AF;
+            --bg-light: #F9FAFC;
+            --bg-white: #FFFFFF;
+            --primary-gradient: linear-gradient(135deg, #D4C1EC 0%, #B8E0D2 100%);
+            --shadow-sm: 0 4px 6px rgba(45, 48, 71, 0.05);
+            --shadow-md: 0 10px 20px rgba(45, 48, 71, 0.08);
+            --shadow-lg: 0 20px 25px -5px rgba(45, 48, 71, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* Apply variables to Tailwind classes */
-        .bg-peach { background-color: var(--peach); }
-        .bg-lavender { background-color: var(--lavender); }
-        .bg-mint { background-color: var(--mint); }
-        .bg-soft-yellow { background-color: var(--soft-yellow); }
         
-        .text-peach { color: var(--peach); }
-        .text-lavender { color: var(--lavender); }
-        .text-mint { color: var(--mint); }
-        .text-soft-yellow { color: var(--soft-yellow); }
-
-        /* Rest of your styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 400;
+            overflow-x: hidden;
         }
         
-        .splash-screen {
-            background: linear-gradient(135deg, var(--lavender) 0%, var(--mint) 100%);
-            animation: splashHide 0.3s linear 2s forwards;
-        }
-
-        @keyframes splashHide {
-            to { opacity: 0; visibility: hidden; }
-        }
-
         .logo-font {
             font-family: 'Comfortaa', cursive;
+            font-weight: 700;
         }
-
-        .screen {
-            padding-top: var(--header-height);
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .screen.active-screen {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .recording {
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        #readingPrompt {
-            scrollbar-width: thin;
-            scrollbar-color: var(--lavender) transparent;
-        }
-
-        #readingPrompt p {
-            line-height: 1.8;
-            font-size: 1.1rem;
-        }
-
-        #readingPrompt::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #readingPrompt::-webkit-scrollbar-thumb {
-            background-color: var(--lavender);
-            border-radius: 8px;
-        }
-
-        #readingPrompt::-webkit-scrollbar-track {
-            background: var(--mint);
-            border-radius: 8px;
-        }
-        /* Audio Controls Styles */
-        #audioControls {
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-            z-index: 100;
-            height: 8rem; /* 96px */
+        
+        header {
+            background-color: var(--bg-white);
+            padding: 1.25rem 0;
             position: fixed;
-            bottom: -8rem; /* Initially hidden */
+            top: 0;
             left: 0;
-            right: 0;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
+            width: 100%;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-
-        #activeControls {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            padding-top: 1.5rem;
-            display: block; /* Always maintain layout */
+        
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
         }
-
-        #audioControls.active #activeControls {
-            opacity: 1;
+        
+        .narrow-container {
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
-
-        #audioControls.active #emptyState {
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 2.5rem;
+            margin-right: 0.75rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            letter-spacing: -0.02em;
+        }
+        
+        .cta-button {
+            background-color: var(--peach);
+            color: white;
+            padding: 0.875rem 1.75rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 14px rgba(255, 181, 167, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.01em;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--peach-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 181, 167, 0.5);
+        }
+        
+        .cta-button-outline {
+            background-color: transparent;
+            color: var(--peach);
+            border: 2px solid var(--peach);
+            padding: 0.75rem 1.75rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.01em;
+        }
+        
+        .cta-button-outline:hover {
+            background-color: var(--peach);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .hero {
+            padding: 10rem 0 6rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-gradient {
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(212, 193, 236, 0.3) 0%, rgba(212, 193, 236, 0) 70%);
+            z-index: -1;
+        }
+        
+        .hero-gradient-2 {
+            position: absolute;
+            bottom: -20%;
+            left: -10%;
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(184, 224, 210, 0.25) 0%, rgba(184, 224, 210, 0) 70%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+        
+        .hero-text {
+            flex: 1;
+        }
+        
+        .hero-image {
+            flex: 1;
+            position: relative;
+        }
+        
+        .hero h2 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-medium);
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+            max-width: 36rem;
+        }
+        
+        .waitlist-form {
+            position: relative;
+            max-width: 28rem;
+            margin-top: 2.5rem;
+        }
+        
+        .waitlist-form input {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 3rem;
+            font-size: 1rem;
+            outline: none;
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .waitlist-form input:focus {
+            border-color: var(--lavender);
+            box-shadow: 0 0 0 3px rgba(212, 193, 236, 0.2);
+        }
+        
+        .waitlist-form button {
+            position: absolute;
+            right: 0.375rem;
+            top: 0.375rem;
+            bottom: 0.375rem;
+            padding: 0 1.5rem;
+        }
+        
+        .device-mockup {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .device-mockup img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .floating-bubble {
+            position: absolute;
+            z-index: 0;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .bubble-1 {
+            width: 120px;
+            height: 120px;
+            background-color: rgba(212, 193, 236, 0.2);
+            top: -30px;
+            right: 20%;
+            animation-delay: 0s;
+        }
+        
+        .bubble-2 {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(184, 224, 210, 0.2);
+            bottom: 10%;
+            left: 10%;
+            animation-delay: 1.5s;
+        }
+        
+        .bubble-3 {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 181, 167, 0.2);
+            bottom: 30%;
+            right: 5%;
+            animation-delay: 3s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: rgba(212, 193, 236, 0.15);
+            color: var(--lavender-dark);
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .badge svg {
+            margin-right: 0.5rem;
+            height: 1rem;
+            width: 1rem;
+        }
+        
+        .about-section {
+            padding: 6rem 0;
+            background: linear-gradient(to bottom, var(--bg-white) 0%, var(--bg-light) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .narrative-container {
+            display: flex;
+            align-items: center;
+            gap: 5rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .narrative-image {
+            flex: 1;
+            position: relative;
+        }
+        
+        .narrative-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .narrative-content {
+            flex: 1;
+        }
+        
+        .quote-marks {
+            font-size: 5rem;
+            line-height: 0;
+            margin-bottom: 2rem;
+            color: var(--lavender);
+            font-family: Georgia, serif;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .narrative-heading {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        
+        .narrative-text {
+            font-size: 1.125rem;
+            color: var(--text-medium);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+        
+        .narrative-author {
+            display: flex;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        
+        .narrative-author img {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+            border: 3px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .narrative-author-info {
+            line-height: 1.4;
+        }
+        
+        .narrative-author-info strong {
+            display: block;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .narrative-author-info span {
+            color: var(--text-medium);
+            font-size: 0.875rem;
+        }
+        
+        .highlight-text {
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .highlight-text::after {
+            content: '';
+            position: absolute;
+            bottom: 0.2em;
+            left: 0;
+            width: 100%;
+            height: 0.3em;
+            background-color: rgba(255, 181, 167, 0.3);
+            z-index: -1;
+        }
+        
+        .benefits {
+            padding: 8rem 0;
+            background-color: var(--bg-white);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            font-weight: 700;
+        }
+        
+        .section-title p {
+            color: var(--text-medium);
+            max-width: 36rem;
+            margin: 0 auto;
+            font-size: 1.125rem;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .benefit-card {
+            background-color: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: 2.5rem;
+            position: relative;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Zapewnia, że zawartość jest rozmieszczona */
+            height: 100%; /* Wyrównuje wysokość kart */
+            align-items: flex-start;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(212, 193, 236, 0.3);
+        }
+        
+        .benefit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .benefit-icon::after {
+            content: '';
+            position: absolute;
+            width: 3rem;
+            height: 3rem;
+            background-color: rgba(212, 193, 236, 0.15);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        
+        .benefit-card h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        
+        .benefit-card p {
+            color: var(--text-medium);
+            font-size: 1rem;
+        }
+        
+        .subtle-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4C1EC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: 0;
+        }
+        
+        .app-preview {
+            padding: 0;
+            padding-top: 6rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app-mockup-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .app-mockup {
+            max-width: 100%;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .app-mockup::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 5%;
+            width: 90%;
+            height: 30px;
+            background: rgba(45, 48, 71, 0.1);
+            filter: blur(20px);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .how-it-works {
+            padding: 8rem 0;
+            padding-top: 3rem;
+            background-color: var(--bg-light);
+            position: relative;
+        }
+        
+        .steps {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 5rem;
+            position: relative;
+        }
+        
+        .step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-number {
+            position: relative;
+            background: var(--primary-gradient);
+            color: white;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-right: 2rem;
+            box-shadow: 0 8px 16px rgba(212, 193, 236, 0.3);
+        }
+        
+        .step-content {
+            padding-top: 0.5rem;
+        }
+        
+        .step-content h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        
+        .step-content p {
+            color: var(--text-medium);
+            font-size: 1.125rem;
+            max-width: 36rem;
+        }
+        
+        .step-connection {
+            position: absolute;
+            top: 4rem;
+            left: 2rem;
+            width: 2px;
+            height: calc(100% - 2rem);
+            background-color: rgba(212, 193, 236, 0.3);
+            z-index: -1;
+        }
+        
+        .step:last-child .step-connection {
             display: none;
         }
         
-
-        #emptyState {
-            display: flex;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-
-        #synthesisScreen.active-screen #audioControls {
-            transform: translateY(-8rem); /* Move up by its height */
-        }
-
-        #playPause {
-            z-index: 2; /* Ensure button stays above progress bar */
+        .features {
+            padding: 8rem 0;
+            background-color: var(--bg-white);
             position: relative;
+            overflow: hidden;
         }
-
-        #progress {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 4px;
-            background: #e5e7eb;
-            border-radius: 2px;
-            touch-action: none; /* Prevent default touch behaviors */
-            z-index: 1; /* Keep below buttons */
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            position: relative;
+            z-index: 1;
         }
-
-        #progress::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            background: var(--lavender);
+        
+        .feature-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            background-color: var(--bg-light);
+            transition: var(--transition);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(212, 193, 236, 0.3);
+        }
+        
+        .feature-icon-container {
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 8px 16px rgba(212, 193, 236, 0.3);
+        }
+        
+        .feature-content h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .feature-content p {
+            color: var(--text-medium);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .feature-app-preview {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 5rem;
+        }
+        
+        .feature-app-preview img {
+            max-width: 100%;
+            /* border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); */
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature-highlight {
+            position: absolute;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            transition: transform 0.2s;
+            background-color: rgba(255, 181, 167, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--peach-dark);
+            box-shadow: 0 8px 16px rgba(255, 181, 167, 0.2);
+            z-index: 3;
+            animation: pulse 2s infinite;
         }
-
-        #progress::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            background: var(--lavender);
-            border-radius: 50%;
-            border: none;
-            transition: transform 0.2s;
+        
+        .highlight-1 {
+            top: 15%;
+            left: 20%;
+            animation-delay: 0s;
         }
-
-        #progress::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+        
+        .highlight-2 {
+            bottom: 25%;
+            right: 15%;
+            animation-delay: 0.5s;
         }
-
-        #progress::-moz-range-thumb:hover {
-            transform: scale(1.2);
+        
+        .highlight-3 {
+            top: 60%;
+            left: 10%;
+            animation-delay: 1s;
         }
-
-        @media (pointer: coarse) {
-            #audioControls {
-                padding-bottom: env(safe-area-inset-bottom); /* Handle iPhone notch */
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 181, 167, 0.4);
             }
             
-            #playPause {
-                min-width: 56px;
-                min-height: 56px;
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 15px rgba(255, 181, 167, 0);
             }
-
-            /* Increase touch target size for progress bar */
-            #progress {
-                height: 8px;
-                -webkit-tap-highlight-color: transparent;
+            
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 181, 167, 0);
             }
         }
-
-        #statusToast {
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        
+        .testimonials {
+            padding: 8rem 0;
+            background-color: var(--bg-light);
+            position: relative;
+            overflow: hidden;
         }
-        .toast-show {
-            animation: toastSlideIn 0.3s ease-out forwards;
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
         }
-
-        .toast-hide {
-            animation: toastSlideOut 0.3s ease-in forwards;
+        
+        .testimonial-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Zapewnia, że zawartość jest rozmieszczona */
+            height: 100%; /* Wyrównuje wysokość kart */
+            background-color: var(--bg-white);
+            border-radius: var(--radius-md);
+            padding: 2.5rem;
+            position: relative;
+            transition: var(--transition);
+            border: 1px solid rgba(229, 231, 235, 0.5);
         }
-
-        .toast-info {
-            border-color: var(--lavender);
-            background: linear-gradient(135deg, rgba(212, 193, 236, 1) 0%, rgba(255, 255, 255, 1) 90%);
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(184, 224, 210, 0.3);
         }
-
-        .toast-success {
-            border-color: var(--mint);
-            background: linear-gradient(135deg, rgba(184, 224, 210, 1) 0%, rgba(255, 255, 255, 1) 90%);
+        
+        .testimonial-text {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-top: 2rem;
+            font-style: italic;
         }
-
-        .toast-error {
-            border-color: var(--peach);
-            background: linear-gradient(135deg, rgba(255, 181, 167, 1) 0%, rgba(255, 255, 255, 1) 90%);
+        
+        .testimonial-text::before {
+            content: '"';
+            position: absolute;
+            top: -1rem;
+            left: -0.5rem;
+            font-size: 5rem;
+            color: rgba(212, 193, 236, 0.2);
+            font-family: Georgia, serif;
+            line-height: 1;
         }
-
-        @keyframes toastSlideIn {
-            0% { opacity: 0; transform: translateY(-40px); }
-            100% { opacity: 1; transform: translateY(0); }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
         }
-
-        @keyframes toastSlideOut {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-40px); }
+        
+        .testimonial-author img {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+            border: 3px solid white;
+            box-shadow: var(--shadow-sm);
         }
-
-        .story-item {
-            transition: all 0.2s ease;
-            border: 2px solid transparent;
+        
+        .testimonial-author-info {
+            line-height: 1.4;
         }
-
-        .story-item.selected {
-            border-color: var(--peach);
-            background-color: rgba(255, 181, 167, 0.15);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 181, 167, 0.1);
-            z-index: 10;
+        
+        .testimonial-author-info strong {
+            display: block;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .testimonial-author-info span {
+            color: var(--text-medium);
+            font-size: 0.875rem;
+        }
+        
+        .faq {
+            padding: 8rem 0;
+            background-color: var(--bg-light);
             position: relative;
         }
-
-        .screen {
-            padding-top: var(--header-height);
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
-
-        /* Ensure header stays on top of content */
-        .sticky-header {
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            padding-top: var(--safe-area-top);
-            transform: translateY(-100%); /* Initially hidden */
-            transition: transform 0.3s ease-out;
-        }
-
-        .mobile-nav {
-            padding-bottom: var(--safe-area-bottom);
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-
-        #confirmModal {
-            backdrop-filter: blur(4px);
-        }
-
-        /* Scrollbar styling to match audio controls */
-        #clonePromptModal ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #clonePromptModal ::-webkit-scrollbar-thumb {
-            background-color: var(--lavender);
-            border-radius: 8px;
-        }
-
-        #clonePromptModal ::-webkit-scrollbar-track {
-            background: var(--mint);
-            border-radius: 8px;
-        }
-
-        /* Animation for modal entrance */
-        @keyframes modalSlideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #clonePromptModal[data-visible="true"] {
-            display: flex;
-            max-height: 100vh;
-            animation: modalSlideIn 0.3s ease-out;
-        }
-
-        #recordingContent {
-            height: 90vh; 
-        }
-
-        .scrolling-container {
-            height: 80vh;
+        
+        .faq-item {
+            margin-bottom: 1.5rem;
+            background-color: var(--bg-white);
+            border-radius: var(--radius-md);
             overflow: hidden;
-            mask-image: linear-gradient(
-                to bottom, 
-                transparent 0%, 
-                black 10%, 
-                black 90%, 
-                transparent 100%
-            );
+            transition: var(--transition);
+            border: 1px solid rgba(229, 231, 235, 0.5);
         }
-
-        .scrolling-text {
-            animation: autoScroll 60s linear infinite;
-            transform: translateY(100%);
+        
+        .faq-item:hover {
+            box-shadow: var(--shadow-sm);
         }
-
-        @keyframes autoScroll {
-            0% { transform: translateY(30%); }
-            100% { transform: translateY(-100%); }
+        
+        .faq-question {
+            padding: 1.5rem 2rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            color: var(--text-dark);
         }
-
-        .clonePromptModal[data-visible="true"] .scrolling-text {
-            animation-play-state: running;
+        
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            color: var(--lavender);
+            transition: var(--transition);
         }
-
-        .clonePromptModal:not([data-visible="true"]) .scrolling-text {
-            animation-play-state: paused;
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 2rem;
         }
-
-        #storiesLoader {
-            display: none; /* Hidden by default */
+        
+        .faq-answer p {
+            color: var(--text-medium);
+            font-size: 1rem;
+            line-height: 1.7;
+            padding-bottom: 1.5rem;
         }
-
-        #synthesisScreen.active-screen #storiesLoader {
-            display: block; /* Show when parent screen is active */
+        
+        .faq-item.active {
+            box-shadow: var(--shadow-sm);
+            border-color: rgba(212, 193, 236, 0.3);
         }
-
-        /* Add to existing styles */
-        .story-item {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-                        box-shadow 0.3s ease;
+        
+        .faq-item.active .faq-question {
+            color: var(--lavender-dark);
         }
-
-        .modal {
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(20px);
-            opacity: 0;
+        
+        .faq-item.active .faq-question::after {
+            content: '−';
+            transform: rotate(180deg);
         }
-
-        .modal.open {
-            transform: translateY(0);
-            opacity: 1;
+        
+        .faq-item.active .faq-answer {
+            max-height: 1000px;
         }
-
-        /* Slide Down for Sticky Header */
-        @keyframes stickyHeaderSlideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
+        
+        .final-cta {
+            padding: 8rem 0;
+            text-align: center;
+            background: var(--primary-gradient);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .final-cta-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .final-cta h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .final-cta p {
+            max-width: 36rem;
+            margin: 0 auto 3rem;
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        
+        .final-cta-form {
+            max-width: 28rem;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .final-cta-form input {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            border: none;
+            border-radius: 3rem;
+            font-size: 1rem;
+            outline: none;
+            background-color: white;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        }
+        
+        .final-cta-form button {
+            position: absolute;
+            right: 0.375rem;
+            top: 0.375rem;
+            bottom: 0.375rem;
+            background-color: var(--peach);
+            box-shadow: 0 4px 14px rgba(255, 181, 167, 0.5);
+        }
+        
+        .final-cta-form button:hover {
+            background-color: var(--peach-dark);
+        }
+        
+        .wave-pattern {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.1' fill='%23FFFFFF'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            z-index: 0;
+        }
+        
+        footer {
+            background-color: var(--text-dark);
+            color: white;
+            padding: 5rem 0 2rem;
+            position: relative;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-column h5 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.9375rem;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-logo-column {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-logo img {
+            height: 2.5rem;
+            margin-right: 0.75rem;
+        }
+        
+        .footer-logo h3 {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9375rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .social-icon:hover {
+            background-color: var(--peach);
+            transform: translateY(-3px);
+        }
+        
+        .bottom-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+        }
+        
+        .copyright {
+            display: flex;
+            align-items: center;
+        }
+        
+        .copyright img {
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        
+        .bottom-links a {
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: 1.5rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .bottom-links a:hover {
+            color: white;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .stat-label {
+            color: var(--text-medium);
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 3rem;
             }
-            to {
-                transform: translateY(0);
-                opacity: 1;
+            
+            .waitlist-form {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .hero h2 {
+                font-size: 3rem;
+            }
+            
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 1.5rem;
+            }
+            
+            .step-connection {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .narrative-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 3rem;
+            }
+            
+            .narrative-author {
+                justify-content: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding: 8rem 0 5rem;
+            }
+            
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.125rem;
+            }
+            
+            .section-title h3 {
+                font-size: 2rem;
+            }
+            
+            .benefit-card {
+                align-items: center;
+                text-align: center;
+            }
+            
+            .testimonial-card {
+                min-height: auto;
+            }
+            
+            .final-cta h3 {
+                font-size: 2rem;
+            }
+            
+            .final-cta p {
+                font-size: 1.125rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-footer {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .bottom-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            .bottom-links a {
+                margin-left: 0;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .waitlist-form {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .waitlist-form button,
+            .final-cta-form button {
+                position: static;
+                width: 100%;
+                margin-top: 0.75rem;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .section-title h3 {
+                font-size: 1.75rem;
             }
         }
 
-        /* Slide Up for Audio Controls */
-        @keyframes audioControlsSlideUp {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
+    .research {
+        padding: 8rem 0;
+        background-color: var(--bg-white);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .research-highlights {
+        margin-top: 5rem;
+    }
+    
+    .research-title {
+        text-align: center;
+        font-size: 1.75rem;
+        margin-bottom: 2.5rem;
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+    
+    .research-link {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1rem;
+        color: var(--lavender-dark);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: var(--transition);
+    }
+    
+    .research-link i {
+        font-size: 0.75rem;
+        margin-left: 0.25rem;
+    }
+    
+    .research-link:hover {
+        color: var(--peach);
+    }
+    
+    .research-disclaimer {
+        margin-top: 3rem;
+        text-align: center;
+        padding: 1.5rem;
+        background-color: rgba(212, 193, 236, 0.1);
+        border-radius: var(--radius-md);
+        color: var(--text-medium);
+        font-size: 0.9375rem;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-        /* Add slide-in classes */
-        .sticky-header-slide-down {
-            animation: stickyHeaderSlideDown 0.5s ease-out forwards;
-        }
+    .research-image {
+        flex: 1;
+        position: relative;
+    }
 
-        .audio-controls-slide-up {
-            animation: audioControlsSlideUp 0.5s ease-out forwards;
-        }
+    .research-image img {
+        width: 100%;
+        max-width: 500px;
+    }
 
-        /* Add slide-out animations (optional for transitions to hide) */
-        @keyframes stickyHeaderSlideUp {
-            from {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
+    @media (max-width: 768px) {
+        .research {
+            padding: 5rem 0;
         }
+        
+        .research-title {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    }
 
-        @keyframes audioControlsSlideDown {
-            from {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-        }
-
-        /* Add slide-out classes */
-        .sticky-header-slide-up {
-            animation: stickyHeaderSlideUp 0.5s ease-in forwards;
-        }
-
-        .audio-controls-slide-down {
-            animation: audioControlsSlideDown 0.5s ease-in forwards;
-        }
     </style>
-
-    <!-- Non-critical CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Asynchronous CSS Loader
-        !function(e){"use strict";var n=function(n,t,o){var i=e.document.createElement("link");for(var a in t)i[a]=t[a];i.rel="stylesheet",i.href=n,o||(e.document.head.appendChild(i),i.onload=function(){this.rel="stylesheet"})};e.loadCSS=n}(window);
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-[#F8F9FD] min-h-screen">
-    <!-- Status Toasts Container -->
-    <div id="toastContainer" class="fixed top-[calc(var(--header-height)+1rem)] left-1/2 -translate-x-1/2 z-[450] w-full max-w-md px-4 space-y-2 pointer-events-none">
-        <div id="statusToast" class="hidden opacity-0 translate-y-[-20px] transition-all duration-300 ease-out rounded-lg shadow-xl p-4 flex items-start gap-3 border-l-4 border-[#FFB5A7] bg-white/95 backdrop-blur-sm">
-            <div class="mt-0.5">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/logo.png" alt="DawnoTemu Logo">
+                    <h1 class="logo-font">DawnoTemu</h1>
+                </div>
+                <a href="#waitlist" class="cta-button">Dołącz do listy</a>
             </div>
-            <div class="flex-1 text-sm"></div>
         </div>
-    </div>
-    <!-- Splash Screen -->
-    <div id="splashScreen" class="splash-screen fixed inset-0 flex flex-col items-center justify-center z-50">
-        <div>
-            <img src="/logo.png" alt="DawnoTemu" class="size-16">
-        </div>
-        <h1 class="logo-font text-4xl font-bold text-white mt-4">DawnoTemu</h1>
-        <p class="text-white/90 mt-2 text-center">Tu, baśnie nabierają<br />czarodziejskiej mocy</p>
-    </div>
-
-    <!-- Main App -->
-    <div class="container mx-auto px-4 pb-16 max-w-md" style="display: none;" id="appContainer">
-        <div class="sticky-header fixed top-0 left-0 right-0 bg-white z-[500] hidden">
-            <div class="container mx-auto px-4 max-w-md">
-                <div class="flex items-center justify-between h-[var(--header-height)]">
-                    <!-- Left Side (Back Button) -->
-                    <div class="flex-grow flex items-center basis-0 justify-start">
-                        <button id="headerBackButton" onclick="showCloneScreen()" 
-                                class="hidden items-center gap-2 text-peach hover:text-peach/80 transition-colors">
-                                <div class="flex items-center">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                                    </svg>
-                                    <span class="text-s  group-hover:text-peach transition-colors">Reset</span>
-                                </div>
-                        </button>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-gradient"></div>
+        <div class="hero-gradient-2"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path d="M15.98 1.804a1 1 0 00-1.96 0l-.24 1.192a1 1 0 01-.784.785l-1.192.238a1 1 0 000 1.962l1.192.238a1 1 0 01.785.785l.238 1.192a1 1 0 001.962 0l.238-1.192a1 1 0 01.785-.785l1.192-.238a1 1 0 000-1.962l-1.192-.238a1 1 0 01-.785-.785l-.238-1.192z" />
+                            <path d="M1.804 4.02a1 1 0 011.962 0l.238 1.192a1 1 0 00.785.785l1.192.238a1 1 0 010 1.962l-1.192.238a1 1 0 00-.785.785l-.238 1.192a1 1 0 01-1.962 0l-.238-1.192a1 1 0 00-.785-.785L.83 9.192a1 1 0 010-1.962l1.192-.238a1 1 0 00.785-.785L3.02 5.02a1 1 0 011.962 0l.238 1.192a1 1 0 00.785.785l1.192.238a1 1 0 010 1.962l-1.192.238a1 1 0 00-.785.785l-.238 1.192a1 1 0 01-1.962 0l-.238-1.192a1 1 0 00-.785-.785L.83 10.192a1 1 0 010-1.962l1.192-.238a1 1 0 00.785-.785L3.02 6.02a1 1 0 010-1.962l1.192-.238a1 1 0 00.785-.785L5.02 2.02a1 1 0 011.962 0l.238 1.192a1 1 0 00.785.785l1.192.238a1 1 0 010 1.962l-1.192.238a1 1 0 00-.785.785l-.238 1.192a1 1 0 01-1.962 0l-.238-1.192a1 1 0 00-.785-.785L3.02 7.192a1 1 0 010-1.962l1.192-.238a1 1 0 00.785-.785L5.02 3.02z" />
+                        </svg>
+                        Innowacja dla rodziców
                     </div>
-        
-                    <!-- Center Title -->
-                    <h1 class="text-xl font-bold text-gray-800 logo-font flex-shrink-0 px-4">
-                        DawnoTemu
-                    </h1>
-        
-                    <!-- Right Side (Avatar) -->
-                    <div class="flex-grow flex items-center basis-0 justify-end">
-                        <div class="w-8 h-8 rounded-full bg-[var(--lavender)] flex items-center justify-center 
-                                  text-white text-sm font-medium">
-                            <img src="/logo.png" alt="DawnoTemu" class="">
+                    <h2 class="logo-font">Twój głos opowiada baśnie, zawsze gdy potrzebujesz</h2>
+                    <p>DawnoTemu to aplikacja, która tworzy perfekcyjną kopię Twojego głosu, aby Twoje dziecko mogło słuchać bajek opowiadanych przez Ciebie w każdej chwili - nawet gdy jesteś zajęty lub daleko.</p>
+                    
+                    <form class="waitlist-form" id="waitlist">
+                        <input type="email" placeholder="Twój adres e-mail" required>
+                        <button type="submit" class="cta-button">Dołącz do listy oczekujących</button>
+                    </form>
+                    
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-number">2500+</div>
+                            <div class="stat-label">Rodziców na liście</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">92%</div>
+                            <div class="stat-label">Pozytywnych opinii</div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Voice Cloning Screen -->
-        <div id="cloneScreen" class="screen">
-            <div class="bg-white rounded-2xl shadow-sm p-4 my-4">
-                <div class="flex items-center mb-6">
-                    <h1 class="text-2xl font-bold text-gray-800 logo-font m-auto">DawnoTemu</h1>
                 </div>
                 
-                <div class="space-y-5">
-                    <div class="text-center p-6 bg-peach/10 rounded-xl">
-                        <div class="text-4xl mb-4">👦👧</div>
-                        <h3 class="text-lg font-medium text-gray-700 mb-2">Stwórz próbkę swojego głosu</h3>
-                        <p class="text-sm text-gray-500 mb-4">Przeczytaj na głos fragment wiersza,<br /> który zaraz zobaczysz</p>
-                        <button onclick="startRecording()" 
-                                class="record-button w-full bg-peach hover:bg-peach/90 text-white px-6 py-4 rounded-xl 
-                                       font-medium text-lg transition-all">
-                            Rozpocznij nagrywanie
-                        </button>
-                    </div>
-
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-200"></div>
-                        </div>
-                        <div class="relative flex justify-center">
-                            <span class="bg-white px-2 text-sm text-gray-400">lub</span>
-                        </div>
-                    </div>
-
-                    <!-- Replace the existing file input section with this -->
-                    <div class="space-y-4 p-6">
-                        <button id="uploadButton" 
-                                class="w-full bg-lavender hover:bg-peach/90 text-white px-6 py-4 rounded-xl 
-                                font-medium text-lg transition-all">
-                            <span>Prześlij plik audio</span>
-                            <input type="file" id="audioFile" accept=".mp3,.wav" class="hidden" />
-                        </button>
+                <div class="hero-image">
+                    <div class="device-mockup">
+                        <video class="app-mockup" autoplay muted playsinline loop>
+                            <source src="/videos/vid1.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="floating-bubble bubble-1"></div>
+                        <div class="floating-bubble bubble-2"></div>
+                        <div class="floating-bubble bubble-3"></div>
                     </div>
                 </div>
-
- 
             </div>
-            <button id="installButton" 
-                    onclick="installPWA()" 
-                    class="hidden fixed bottom-4 right-4 bg-peach text-white p-3 rounded-full shadow-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-            </button>
         </div>
-
-        <!-- Synthesis Screen -->
-        <div id="synthesisScreen" class="screen">
-            <div class="container mx-auto px-4 max-w-md pt-2">
-                <!-- Loader Container -->
-                <div id="storiesLoader" class="text-center py-8 space-y-3">
-                    <svg class="animate-spin w-8 h-8 text-peach mx-auto" fill="none" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" class="opacity-25"/>
-                        <path fill="currentColor" class="opacity-75" 
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                    </svg>
-                    <p class="text-gray-600 text-sm font-medium">Ładowanie...</p>
+    </section>
+    
+    <!-- New About/Narrative Section -->
+    <section class="about-section">
+        <div class="container">
+            <div class="narrative-container">
+                <div class="narrative-image">
+                    <img src="/images/img1.jpg" alt="Rodzic czytający dziecku przed snem">
                 </div>
-        
-                <!-- Stories Container -->
-                <div id="storiesContainer" class="grid gap-4 pt-2 hidden"></div>
                 
-                <div id="storyStatus" class="mt-4"></div>
-                <audio id="storyAudio" style="display: none;"></audio>
-            </div>
-        </div>
-    </div>
-    <!-- Custom Audio Controls -->
-    <div id="audioControls" class="fixed bottom-0 left-0 right-0 bg-white shadow-lg h-24 transition-all duration-300">
-        <div class="container mx-auto px-4 max-w-md h-full">
-            <!-- Empty State -->
-            <div id="emptyState" class="h-full flex items-center justify-center text-gray-400 text-sm font-medium">
-                ✨ Wybierz bajkę, by rozpocząć
-            </div>
-    
-            <!-- Active Controls -->
-            <div id="activeControls" class="hidden h-full flex flex-col justify-center">
-                <div class="flex items-center justify-between gap-4 pb-2">
-                    <!-- Rewind Button -->
-                    <button id="rewind" class="p-2 text-gray-600 hover:text-peach transition-colors group">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 19l-7-7 7-7"/>
-                            </svg>
-                            <span class="text-xs text-gray-600 group-hover:text-peach transition-colors">5s</span>
+                <div class="narrative-content">
+                    <div class="quote-marks">"</div>
+                    <h3 class="narrative-heading">Wieczór, kiedy nie mogłam przeczytać bajki na dobranoc</h3>
+                    <p class="narrative-text">
+                        Pamiętam dokładnie ten wieczór, gdy musiałam zostać dłużej w pracy. Moja córka Julia zawsze przed snem czeka na naszą <span class="highlight-text">wspólną bajkę</span>. To nasz rytuał, nasza chwila bliskości. 
+                    </p>
+                    <p class="narrative-text">
+                        Gdy zadzwoniłam do domu, usłyszałam jej zapłakany głos: <em>"Mamo, kto mi dzisiaj przeczyta bajkę?"</em> Poczułam ukłucie w sercu. My, rodzice, doskonale wiemy, jak ważne są te małe rytuały. Jak budują poczucie bezpieczeństwa i spokoju naszych dzieci.
+                    </p>
+                    <p class="narrative-text">
+                        Tego wieczoru narodził się pomysł na DawnoTemu - aplikację, która pozwala na to, by Twój głos był zawsze przy dziecku, nawet gdy Ty nie możesz. Bo <span class="highlight-text">żadne dziecko nie powinno zasypiać bez ukochanej bajki</span> opowiedzianej znajomym głosem.
+                    </p>
+                    
+                    <div class="narrative-author">
+                        <img src="/images/avatar1.jpg" alt="Katarzyna N.">
+                        <div class="narrative-author-info">
+                            <strong>Katarzyna Nowak</strong>
+                            <span>Założycielka DawnoTemu, mama Julii</span>
                         </div>
-                    </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
-                    <!-- Play/Pause Button -->
-                    <button id="playPause" class="w-12 h-12 rounded-full bg-lavender text-white flex items-center justify-center 
-                                hover:bg-peach/90 transition-colors shadow-lg p-3 md:p-0">
-                        <svg id="playIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                        </svg>
-                        <svg id="pauseIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </button>
+    <section class="benefits">
+        <div class="subtle-pattern"></div>
+        <div class="container">
+            <div class="section-title">
+                <h3 class="logo-font">Dlaczego rodzice pokochają DawnoTemu</h3>
+                <p>Odkryj, jak nasza aplikacja rozwiązuje codzienne wyzwania związane z wieczornym czytaniem bajek</p>
+            </div>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">👔</div>
+                    <h4>Gdy nie możesz być przy dziecku</h4>
+                    <p>Pracujesz do późna? Wyjeżdżasz służbowo? Twój głos zawsze będzie przy dziecku o porze snu, zapewniając poczucie bezpieczeństwa i rutynę.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">😴</div>
+                    <h4>Gdy jesteś zmęczony</h4>
+                    <p>Po ciężkim dniu trudno czytać z energią. Teraz możesz odpocząć, podczas gdy Twój głos opowiada bajkę z entuzjazmem i ekspresją.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">💡</div>
+                    <h4>Rozwój języka i wyobraźni</h4>
+                    <p>Regularne słuchanie bajek wspiera rozwój słownictwa i kreatywnego myślenia Twojego dziecka, co potwierdzają badania psychologiczne.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔄</div>
+                    <h4>Zawsze nowe historie</h4>
+                    <p>Bogata biblioteka klasycznych polskich baśni i nowoczesnych opowieści edukacyjnych - nigdy nie zabraknie Ci pomysłów na nową historię.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🌙</div>
+                    <h4>Spokojniejszy sen</h4>
+                    <p>Znajomy głos rodzica uspokaja dziecko i pomaga mu zasnąć szybciej i spokojniej, redukując stres i budując poczucie bezpieczeństwa.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📱</div>
+                    <h4>Bez ekranu przed snem</h4>
+                    <p>Tylko dźwięk - bez szkodliwego niebieskiego światła, które zaburza rytm snu. Idealne rozwiązanie na dobry, zdrowy sen Twojego dziecka.</p>
+                </div>
+            </div>
+        </div>
+    </section>
     
-                    <!-- Forward Button -->
-                    <button id="forward" class="p-2 text-gray-600 hover:text-peach transition-colors group">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-gray-600 group-hover:text-peach transition-colors">5s</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5l7 7-7 7"/>
-                            </svg>
+    <section class="app-preview">
+        <div class="container">
+            <div class="app-mockup-container">
+                <img src="/images/img3.jpg" alt="Aplikacja DawnoTemu w akcji" class="app-mockup">
+            </div>
+        </div>
+    </section>
+    
+    <section class="how-it-works">
+        <div class="narrow-container">
+            <div class="section-title">
+                <h3 class="logo-font">Jak to działa?</h3>
+                <p>Prosto i magicznie - stwórz swój cyfrowy głos w kilka minut</p>
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-connection"></div>
+                    <div class="step-content">
+                        <h4>Nagraj próbkę swojego głosu</h4>
+                        <p>Wystarczy, że przeczytasz krótki fragment tekstu. To zajmie około 30 sekund! Nasza zaawansowana technologia AI analizuje charakterystykę Twojego głosu, aby stworzyć jego cyfrowy klon.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-connection"></div>
+                    <div class="step-content">
+                        <h4>Wybierz bajkę z biblioteki</h4>
+                        <p>Znajdziesz klasyczne polskie baśnie, popularne opowieści i edukacyjne historie. Możesz też stworzyć własną bajkę, wpisując temat lub imię dziecka - nasza AI wygeneruje spersonalizowaną opowieść.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Słuchaj bajki swoim głosem</h4>
+                        <p>Twoje dziecko usłyszy bajkę opowiadaną Twoim głosem - idealnie na czas snu lub podróży. Możesz słuchać razem z dzieckiem lub włączyć aplikację, gdy nie możesz być obecny. Aplikacja działa offline, więc jest idealna w każdej sytuacji.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- New Features Section -->
+    <section class="features">
+        <div class="subtle-pattern"></div>
+        <div class="container">
+            <div class="section-title">
+                <h3 class="logo-font">Funkcje, które pokochasz</h3>
+                <p>DawnoTemu to więcej niż tylko bajki - to kompletne rozwiązanie dla współczesnych rodziców</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Doskonałe klonowanie głosu</h4>
+                        <p>Zaawansowana technologia AI perfekcyjnie odwzorowuje barwę, akcent i sposób mówienia. Twoje dziecko nie zauważy różnicy - usłyszy bajkę dokładnie Twoim głosem.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Biblioteka polskich bajek</h4>
+                        <p>Bogata kolekcja klasycznych polskich bajek i baśni, dostosowanych do różnych grup wiekowych. Od Smoka Wawelskiego po współczesne opowieści edukacyjne.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Generator spersonalizowanych historii</h4>
+                        <p>Utwórz własną, unikalną bajkę dopasowaną do zainteresowań Twojego dziecka. Wystarczy, że wpiszesz imię dziecka i temat - AI stworzy wciągającą opowieść.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-volume-up"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Efekty dźwiękowe i muzyka</h4>
+                        <p>Delikatna muzyka w tle i subtelne efekty dźwiękowe wzbogacają opowieść, tworząc magiczny klimat bez rozpraszania uwagi dziecka.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Timer usypiania</h4>
+                        <p>Ustaw automatyczne wyciszanie po zakończeniu bajki lub po określonym czasie. Aplikacja sama się wyłączy, gdy dziecko zaśnie.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Tryb offline</h4>
+                        <p>Pobierz bajki na urządzenie i słuchaj ich bez dostępu do internetu. Idealne rozwiązanie w podróży lub miejscach z słabym zasięgiem.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-app-preview">
+                <img src="/images/img4.png" alt="Interfejs aplikacji DawnoTemu">
+                <div class="feature-highlight highlight-1">1</div>
+                <div class="feature-highlight highlight-2">2</div>
+                <div class="feature-highlight highlight-3">3</div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="testimonials">
+        <div class="subtle-pattern"></div>
+        <div class="container">
+            <div class="section-title">
+                <h3 class="logo-font">Co mówią rodzice?</h3>
+                <p>Doświadczenia pierwszych testerów aplikacji DawnoTemu</p>
+            </div>
+            
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        Kiedy muszę pracować do późna, moja córka nadal zasypia słuchając bajki czytanej moim głosem. To niesamowite, jak technologia może pomóc w utrzymaniu naszej więzi mimo napięć czasowych.
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/images/avatar2.jpg" alt="Anna K.">
+                        <div class="testimonial-author-info">
+                            <strong>Anna K.</strong>
+                            <span>Mama 5-latki, Kraków</span>
                         </div>
-                    </button>
+                    </div>
                 </div>
-    
-                <!-- Progress Bar Container -->
-                <div class="w-full px-4">
-                    <div class="flex items-center gap-2 text-sm text-gray-600">
-                        <span id="currentTime" class="text-xs w-12 text-center">0:00</span>
-                        <input type="range" id="progress" class="flex-1 h-2 bg-gray-200 rounded-full cursor-pointer">
-                        <span id="duration" class="text-xs w-12 text-center">0:00</span>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        Jako tata, który często wyjeżdża służbowo, czułem się winny, że nie czytam dzieciom na dobranoc. Teraz, dzięki DawnoTemu, moje dzieci słyszą mój głos każdego wieczoru. To zrewolucjonizowało nasz wieczorny rytuał.
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/images/avatar3.jpg" alt="Tomek S.">
+                        <div class="testimonial-author-info">
+                            <strong>Tomek S.</strong>
+                            <span>Tata dwójki dzieci, Gdańsk</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        Czasami po długim dniu z trójką dzieci brakuje mi energii na ekspresyjne czytanie. DawnoTemu pozwala mi odpocząć, a jednocześnie dziecko słyszy moją wersję ulubionej bajki. To jak mieć supermoc bycia w dwóch miejscach naraz.
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/images/avatar4.jpg" alt="Marta W.">
+                        <div class="testimonial-author-info">
+                            <strong>Marta W.</strong>
+                            <span>Mama trojaczków, Wrocław</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmModal" class="fixed inset-0 bg-black/50 z-[1000] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
-            <h3 class="text-lg font-semibold mb-4">Na pewno zaczynamy od nowa?</h3>
-            <p class="text-gray-600 mb-6"> Usuniemy Twój obecny model głosu i wszystkie dotychczas powstałe bajki. Czy na pewno chcesz kontynuować?</p>
-            <div class="flex justify-end gap-3">
-                <button id="confirmCancel" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                    Anuluj
-                </button>
-                <button id="confirmDelete" class="px-4 py-2 bg-peach text-white rounded-lg hover:bg-peach/90">
-                    Usuń i nagraj ponownie
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- Cloning Prompt Modal -->
-    <div id="clonePromptModal" class="fixed inset-0 bg-black/50 z-[1000] hidden items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
-            <!-- Modal Header -->
-            <div id="cloneModalHeader" class="bg-peach/10 p-4 border-b border-peach/20">
-                <h3 class="text-xl font-bold text-gray-800 logo-font flex items-center gap-2">
-                    <svg class="w-6 h-6 text-peach" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
-                    </svg>
-                    Dodaj Swój Głos
-                </h3>
-            </div>
-    
-            <!-- Recording Content -->
-            <div id="recordingContent" class="max-h-[60vh] overflow-y-hidden p-6 bg-gray-50/50 relative">
-                <div class="scrolling-container absolute top-0 left-0 right-0 h-full">
-                    <div class="scrolling-text animate-scroll px-8" >
-                        <p class="text-lg leading-relaxed">
-                            Był spokojny, ciepły wieczór. Słońce powoli chowało się za horyzontem, malując niebo odcieniami pomarańczu i różu. Anna usiadła wygodnie w fotelu przy oknie, trzymając w dłoniach filiżankę herbaty. Powietrze pachniało letnim deszczem, który niedawno przeszedł przez miasto. W oddali słychać było śmiech dzieci bawiących się na podwórku i cichy szum liści poruszanych wiatrem. Kot, zwinięty w kłębek na parapecie, leniwie otworzył jedno oko, jakby chciał sprawdzić, czy wszystko jest w porządku. Anna wzięła głęboki oddech i uśmiechnęła się. To był idealny moment, by na chwilę zatrzymać się i po prostu cieszyć się chwilą.
-                        </p>
-                    </div>
-                </div>  
-            </div>
-    
-            <!-- Processing Content -->
-            <div id="processingContent" class="hidden max-h-[60vh] overflow-y-auto p-6 bg-gray-50/50">
-                <div class="flex flex-col items-center justify-center h-full space-y-4">
-                    <svg class="animate-spin w-8 h-8 text-peach" fill="none" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" class="opacity-25"/>
-                        <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                    </svg>
-                    <p class="text-gray-600">Trwa Analizowanie Twojego Głosu...</p>
-                </div>
-            </div>
-    
-            <!-- Modal Footer -->
-            <div id="clonePromptModalFooter" class="bg-gray-50 p-4 border-t border-gray-100 flex flex-col items-center gap-3">
-                <div class="w-full">
-                    <div class="h-2 bg-gray-100 rounded-full mb-4 overflow-hidden">
-                        <div class="progress-bar h-full bg-peach transition-all duration-300 w-0"></div>
-                    </div>
-                    <div id="recordStatus" class="text-sm text-center mb-2"></div>
-                    <button id="cancelRecording" 
-                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
-                        Przerwij nagrywanie
-                    </button>
-                </div>
-                <audio id="audioPreview" style="display: none;"></audio>
-            </div>
-        </div>
-    </div>
 
-    <script src="scripts.js"></script>
+    <section class="research">
+        <div class="subtle-pattern"></div>
+        <div class="container">
+            <div class="section-title">
+                <h3 class="logo-font">Głos rodzica – fundament rozwoju dziecka</h3>
+                <p>Odkryj, dlaczego głos rodzica jest kluczowy dla rozwoju języka i emocji Twojego dziecka</p>
+            </div>
+            
+            <div class="narrative-container">
+                <div class="research-image">
+                    <img src="/images/img5.png" alt="Dr Joanna Kowalska, psycholog dziecięcy">
+                </div>
+                
+                <div class="narrative-content">
+                    <div class="quote-marks">"</div>
+                    <p class="narrative-text">
+                        Głos rodzica to <span class="highlight-text">pierwszy i najważniejszy instrument</span>, który kształtuje rozwój mózgu dziecka. Badania neuroobrazowe jednoznacznie wykazują, że głos matki aktywuje znacznie więcej obszarów mózgu dziecka niż głosy innych osób - nie tylko rejony odpowiedzialne za przetwarzanie dźwięków, ale również struktury związane z emocjami i tworzeniem więzi.
+                    </p>
+                    <p class="narrative-text">
+                        Nawet gdy rodzice nie mogą być fizycznie obecni, ich głos nadal stanowi kotwicę emocjonalną i źródło poczucia bezpieczeństwa dla dziecka. Dlatego aplikacja, która wiernie odtwarza głos rodzica, może być cennym narzędziem wspierającym rozwój poznawczy i emocjonalny dziecka w czasach, gdy trudno o stałą obecność.
+                    </p>
+                    
+                    <div class="narrative-author">
+                        <img src="/images/avatar5.jpg" alt="Dr Joanna Kowalska">
+                        <div class="narrative-author-info">
+                            <strong>Dr Joanna Kowalska</strong>
+                            <span>Psycholog dziecięcy, wykładowca UAM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="research-highlights">
+                <h4 class="research-title">Jak głos rodzica kształtuje rozwój dziecka</h4>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🧠</div>
+                        <h4>Aktywacja obszarów mózgu</h4>
+                        <p>Badania uniwersytetu Stanford wykazują, że głos matki aktywuje znacznie więcej obszarów mózgu dziecka, w tym rejony odpowiedzialne za emocje i funkcje społeczne.</p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4610950/" class="research-link" target="_blank">Czytaj więcej <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">👶</div>
+                        <h4>Wrodzona preferencja głosu</h4>
+                        <p>Noworodki już od pierwszych chwil życia wykazują wyraźną preferencję do głosu swojej matki, co jest ewolucyjnie zaprogramowanym mechanizmem wspierającym tworzenie więzi.</p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4222191/" class="research-link" target="_blank">Czytaj więcej <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+            
+                    <div class="benefit-card">
+                        <div class="benefit-icon">❤️</div>
+                        <h4>Emocjonalne aspekty kontaktu wokalnego</h4>
+                        <p>Wczesny kontakt wokalny z rodzicami oferuje odżywcze środowisko dla rozwoju dziecka i promuje bezpośrednią interakcję wokalną, umożliwiającą wymianę sygnałów emocjonalnych.</p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11473331/" class="research-link" target="_blank">Czytaj więcej <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                </div>
+                
+                <div class="research-disclaimer">
+                    <p>Aplikacja Dawno Temu została zaprojektowana jako uzupełnienie, a nie zastępstwo bezpośredniej interakcji z rodzicami. Zalecamy, aby regularnie rozmawiać z dzieckiem o wysłuchanych bajkach.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <div class="wave-pattern"></div>
+        <div class="container">
+            <div class="final-cta-content">
+                <h3 class="logo-font">Dołącz do rodzin, które już odkryły magię DawnoTemu</h3>
+                <p>Zapisz się na listę oczekujących i otrzymuj wyjątkowe porady dotyczące wychowania i rozwoju dziecka w naszym newsletterze.</p>
+                
+                <form class="final-cta-form">
+                    <input type="email" placeholder="Twój adres e-mail" required>
+                    <button type="submit" class="cta-button">Zapisz się teraz</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <section class="faq">
+        <div class="container">
+            <div class="section-title">
+                <h3 class="logo-font">Najczęściej zadawane pytania</h3>
+                <p>Wszystko, co chcesz wiedzieć o aplikacji DawnoTemu</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">Czy to naprawdę będzie brzmiało jak mój głos?</div>
+                    <div class="faq-answer">
+                        <p>Tak! Używamy zaawansowanej technologii AI do klonowania Twojego głosu. Większość dzieci nie zauważa różnicy - dla nich to po prostu głos mamy czy taty opowiadający bajkę. Nasza technologia zapewnia naturalne brzmienie, intonację i ekspresję charakterystyczną dla Twojego głosu.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Czy moje nagranie głosu jest bezpieczne?</div>
+                    <div class="faq-answer">
+                        <p>Bezpieczeństwo Twoich danych jest naszym priorytetem. Twój model głosu jest przechowywany w zaszyfrowanej formie i używany wyłącznie do generowania bajek w aplikacji. Nigdy nie udostępniamy Twoich nagrań osobom trzecim, a Twoje dane są chronione zgodnie z najwyższymi standardami bezpieczeństwa i RODO.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Ile czasu zajmuje nagranie próbki głosu?</div>
+                    <div class="faq-answer">
+                        <p>Wystarczy około 3 minuty czytania przygotowanego tekstu. To jednorazowy proces - potem możesz korzystać z aplikacji bez ograniczeń. Nagranie możesz wykonać w dowolnym, spokojnym miejscu, używając smartfona. Nasz system poprowadzi Cię przez cały proces krok po kroku.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Jakie bajki są dostępne w aplikacji?</div>
+                    <div class="faq-answer">
+                        <p>Nasza biblioteka zawiera klasyczne polskie baśnie (np. o Smoku Wawelskim, Panu Twardowskim), popularne bajki z całego świata oraz nowoczesne opowiadania o tematyce edukacyjnej. Regularnie dodajemy nowe treści. Możesz też skorzystać z generatora bajek, aby stworzyć unikalną historię dostosowaną do zainteresowań Twojego dziecka.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Czy mogę używać aplikacji bez internetu?</div>
+                    <div class="faq-answer">
+                        <p>Tak, możesz pobrać bajki na urządzenie i odtwarzać je offline - idealne rozwiązanie na podróże czy miejsca z słabym zasięgiem. Generowanie nowych bajek wymaga połączenia z internetem, ale wszystkie pobrane historie są dostępne w trybie offline.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Czy aplikacja zastępuje czytanie przez rodzica?</div>
+                    <div class="faq-answer">
+                        <p>Absolutnie nie! DawnoTemu to narzędzie, które wspiera rodziców, gdy nie mogą być obecni lub potrzebują odpoczynku. Zachęcamy do regularnego, osobistego czytania dzieciom, gdy tylko jest to możliwe - nic nie zastąpi prawdziwej interakcji rodzic-dziecko. Nasza aplikacja jest pomostem, gdy tradycyjne czytanie jest niemożliwe.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo-column">
+                    <div class="footer-logo">
+                        <img src="/logo.png" alt="DawnoTemu Logo">
+                        <h3 class="logo-font">DawnoTemu</h3>
+                    </div>
+                    <p class="footer-description">
+                        Innowacyjna aplikacja, która pomaga rodzicom utrzymać magię wieczornych bajek, nawet gdy życie staje się zbyt intensywne.
+                    </p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h5>Aplikacja</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Funkcje</a></li>
+                        <li><a href="#">Jak to działa</a></li>
+                        <li><a href="#">Biblioteka bajek</a></li>
+                        <li><a href="#">Wsparcie</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h5>Firma</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">O nas</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Kariera</a></li>
+                        <li><a href="#">Kontakt</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h5>Informacje</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Prywatność</a></li>
+                        <li><a href="#">Warunki</a></li>
+                        <li><a href="#">Bezpieczeństwo</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bottom-footer">
+                <div class="copyright">
+                    <img src="/logo.png" alt="DawnoTemu Logo">
+                    © 2025 DawnoTemu. Wszelkie prawa zastrzeżone.
+                </div>
+                <div class="bottom-links">
+                    <a href="#">Prywatność</a>
+                    <a href="#">Warunki</a>
+                    <a href="#">Mapa strony</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentNode;
+                const isActive = item.classList.contains('active');
+                
+                // Close all others
+                document.querySelectorAll('.faq-item').forEach(faqItem => {
+                    faqItem.classList.remove('active');
+                    const answer = faqItem.querySelector('.faq-answer');
+                    answer.style.maxHeight = null;
+                });
+                
+                // Toggle current item
+                if (!isActive) {
+                    item.classList.add('active');
+                    const answer = item.querySelector('.faq-answer');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                }
+            });
+        });
+        
+        // Form submission
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = form.querySelector('input[type="email"]').value;
+                
+                // Display success message (in a real implementation, you'd send data to your server)
+                const successMessage = document.createElement('div');
+                successMessage.style.background = '#B8E0D2';
+                successMessage.style.color = '#2D3047';
+                successMessage.style.padding = '1rem';
+                successMessage.style.borderRadius = '0.5rem';
+                successMessage.style.marginTop = '1rem';
+                successMessage.style.fontSize = '0.9375rem';
+                successMessage.style.fontWeight = '500';
+                successMessage.style.animation = 'fadeIn 0.5s ease-in-out';
+                successMessage.textContent = `Dziękujemy! Na adres ${email} wyślemy informacje o dostępie do aplikacji.`;
+                
+                form.appendChild(successMessage);
+                form.reset();
+                
+                // Remove message after 5 seconds
+                setTimeout(() => {
+                    successMessage.style.animation = 'fadeOut 0.5s ease-in-out';
+                    setTimeout(() => {
+                        form.removeChild(successMessage);
+                    }, 500);
+                }, 5000);
+            });
+        });
+        
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add fadeIn and fadeOut animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

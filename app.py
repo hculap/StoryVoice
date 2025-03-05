@@ -70,7 +70,7 @@ def delete_s3_prefix(prefix):
 # Routes
 @app.route('/')
 def index():
-    return send_from_directory('static', 'index.html')
+    return send_from_directory('static', 'app.html')
 
 @app.route('/manifest.json')
 def serve_manifest():
