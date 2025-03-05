@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dawn CSS Framework | DawnoTemu Component Library</title>
+    <link rel="stylesheet" href="dawn.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .showcase-section {
+            padding: 4rem 0;
+            border-bottom: 1px solid rgba(212, 193, 236, 0.3);
+        }
+        
+        .showcase-heading {
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--dawn-lavender);
+            display: inline-block;
+        }
+        
+        .color-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100px;
+            border-radius: var(--dawn-radius-md);
+            margin-bottom: 0.5rem;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background-color: var(--dawn-bg-light);
+            padding: 1rem;
+            border-radius: var(--dawn-radius-sm);
+            font-family: monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .sample-avatar {
+            width: 3.5rem;
+            height: 3.5rem;
+            background-color: var(--dawn-lavender);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 3px solid white;
+            box-shadow: var(--dawn-shadow-sm);
+        }
+
+        /* Additional styles for JS components showcase */
+        .dawn-notifications {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .dawn-notification {
+            padding: 1rem;
+            margin-bottom: 10px;
+            border-radius: var(--dawn-radius-md);
+            background-color: white;
+            box-shadow: var(--dawn-shadow-md);
+            position: relative;
+            animation: slideInRight 0.3s forwards;
+        }
+
+        .dawn-notification-hiding {
+            animation: slideOutRight 0.3s forwards;
+        }
+        
+        .dawn-notification-success {
+            border-left: 4px solid var(--dawn-mint);
+        }
+        
+        .dawn-notification-error {
+            border-left: 4px solid #FF6B6B;
+        }
+        
+        .dawn-notification-warning {
+            border-left: 4px solid var(--dawn-yellow);
+        }
+        
+        .dawn-notification-info {
+            border-left: 4px solid var(--dawn-lavender);
+        }
+        
+        .dawn-notification-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Modal styles */
+        .dawn-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .dawn-modal-backdrop.active {
+            opacity: 1;
+        }
+        
+        .dawn-modal {
+            background-color: white;
+            border-radius: var(--dawn-radius-md);
+            box-shadow: var(--dawn-shadow-lg);
+            max-width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .dawn-modal.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .dawn-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dawn-modal-title {
+            margin: 0;
+            font-family: var(--dawn-font-brand);
+            font-size: 1.5rem;
+        }
+        
+        .dawn-modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .dawn-modal-body {
+            padding: 1.5rem;
+        }
+        
+        .dawn-modal-open {
+            overflow: hidden;
+        }
+
+        /* Tabs styles */
+        .dawn-tabs {
+            margin-bottom: 2rem;
+        }
+        
+        .dawn-tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
+        }
+        
+        .dawn-tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            position: relative;
+            transition: var(--dawn-transition);
+            color: var(--dawn-text-medium);
+            font-weight: var(--dawn-weight-semibold);
+        }
+        
+        .dawn-tab:hover {
+            color: var(--dawn-text-dark);
+        }
+        
+        .dawn-tab.active {
+            color: var(--dawn-lavender-dark);
+        }
+        
+        .dawn-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--dawn-lavender);
+        }
+        
+        .dawn-tab-panel {
+            display: none;
+        }
+        
+        .dawn-tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        /* Accordion styles */
+        .dawn-accordion {
+            margin-bottom: 2rem;
+        }
+        
+        .dawn-accordion-item {
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            border-radius: var(--dawn-radius-md);
+            overflow: hidden;
+        }
+        
+        .dawn-accordion-header {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--dawn-bg-white);
+            transition: var(--dawn-transition);
+            font-weight: var(--dawn-weight-semibold);
+        }
+        
+        .dawn-accordion-header::after {
+            content: '+';
+            font-size: 1.2rem;
+            transition: var(--dawn-transition);
+        }
+        
+        .dawn-accordion-item.active .dawn-accordion-header {
+            color: var(--dawn-lavender-dark);
+        }
+        
+        .dawn-accordion-item.active .dawn-accordion-header::after {
+            content: '−';
+            transform: rotate(180deg);
+        }
+        
+        .dawn-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 1.5rem;
+        }
+        
+        .dawn-accordion-item.active .dawn-accordion-content {
+            max-height: 500px;
+        }
+        
+        .dawn-accordion-body {
+            padding-bottom: 1.5rem;
+        }
+
+        /* Animations */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Scroll animations */
+        .dawn-animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .dawn-animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <header class="dawn-navbar">
+        <div class="dawn-container">
+            <div class="dawn-navbar-content">
+                <div class="dawn-logo">
+                    <img src="https://placehold.co/100x100/D4C1EC/FFFFFF.svg?text=DT" alt="DawnoTemu Logo">
+                    <h1 class="dawn-font-brand">DawnoTemu</h1>
+                </div>
+                <div class="dawn-nav-links dawn-md-hidden">
+                    <a href="#colors" class="dawn-nav-link">Kolory</a>
+                    <a href="#typography" class="dawn-nav-link">Typografia</a>
+                    <a href="#buttons" class="dawn-nav-link">Przyciski</a>
+                    <a href="#cards" class="dawn-nav-link">Karty</a>
+                    <a href="#forms" class="dawn-nav-link">Formularze</a>
+                    <a href="#components" class="dawn-nav-link">Komponenty</a>
+                    <a href="#utilities" class="dawn-nav-link">Narzędzia</a>
+                </div>
+                <button class="dawn-btn dawn-btn-primary dawn-sm-hidden">Pobierz</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="dawn-hero">
+        <div class="dawn-hero-gradient"></div>
+        <div class="dawn-hero-gradient-2"></div>
+        <div class="dawn-container">
+            <div class="dawn-hero-content">
+                <div class="dawn-hero-text">
+                    <div class="dawn-badge">
+                        <i class="fas fa-code"></i>
+                        Framework CSS
+                    </div>
+                    <h2 class="dawn-font-brand">Dawn CSS Framework</h2>
+                    <p>Lekki i elastyczny framework CSS stworzony dla DawnoTemu, zachowujący estetykę marki przy jednoczesnym zapewnieniu modularności i łatwości użycia.</p>
+                    <div class="dawn-flex dawn-gap-4">
+                        <a href="#docs" class="dawn-btn dawn-btn-primary">Dokumentacja</a>
+                        <a href="#download" class="dawn-btn dawn-btn-outline">Pobierz</a>
+                    </div>
+                </div>
+                <div class="dawn-hero-image">
+                    <img src="https://placehold.co/600x400/D4C1EC/FFFFFF.svg?text=Dawn+CSS" alt="Dawn CSS Framework" class="dawn-shadow-lg dawn-rounded-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="dawn-container">
+        <!-- Colors -->
+        <section id="colors" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Kolory</h2>
+            <p class="dawn-mb-5">Główna paleta kolorów DawnoTemu, dostępna za pomocą zmiennych CSS i klas pomocniczych.</p>
+            
+            <div class="dawn-grid dawn-grid-cols-4 dawn-grid-md-cols-1">
+                <div>
+                    <div class="color-box dawn-bg-lavender">var(--dawn-lavender)</div>
+                    <code>#D4C1EC</code>
+                    <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-bg-lavender</p>
+                </div>
+                <div>
+                    <div class="color-box dawn-bg-peach">var(--dawn-peach)</div>
+                    <code>#FFB5A7</code>
+                    <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-bg-peach</p>
+                </div>
+                <div>
+                    <div class="color-box dawn-bg-mint">var(--dawn-mint)</div>
+                    <code>#B8E0D2</code>
+                    <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-bg-mint</p>
+                </div>
+                <div>
+                    <div class="color-box dawn-bg-yellow">var(--dawn-yellow)</div>
+                    <code>#FAE8B0</code>
+                    <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-bg-yellow</p>
+                </div>
+            </div>
+            
+            <div class="dawn-mt-5">
+                <h3 class="dawn-h4 dawn-font-brand">Gradient</h3>
+                <div class="dawn-grid dawn-grid-cols-1">
+                    <div>
+                        <div class="color-box dawn-bg-gradient">var(--dawn-gradient-primary)</div>
+                        <code>linear-gradient(135deg, #D4C1EC 0%, #B8E0D2 100%)</code>
+                        <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-bg-gradient</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Typography -->
+        <section id="typography" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Typografia</h2>
+            <p class="dawn-mb-5">Hierarchia typograficzna i klasy stylów tekstu.</p>
+            
+            <div class="dawn-mb-6">
+                <h3 class="dawn-h4 dawn-font-brand">Fonty</h3>
+                <div class="dawn-grid dawn-grid-cols-3 dawn-grid-md-cols-1 dawn-gap-4">
+                    <div class="dawn-card">
+                        <h4 class="dawn-font-brand">Comfortaa</h4>
+                        <p class="dawn-font-brand">Lorem ipsum dolor sit amet</p>
+                        <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-font-brand</p>
+                    </div>
+                    <div class="dawn-card">
+                        <h4 class="dawn-font-ui">Quicksand</h4>
+                        <p class="dawn-font-ui">Lorem ipsum dolor sit amet</p>
+                        <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-font-ui</p>
+                    </div>
+                    <div class="dawn-card">
+                        <h4 class="dawn-font-body">Plus Jakarta Sans</h4>
+                        <p class="dawn-font-body">Lorem ipsum dolor sit amet</p>
+                        <p class="dawn-text-sm dawn-text-medium">Klasa: dawn-font-body</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dawn-mb-6">
+                <h3 class="dawn-h4 dawn-font-brand">Nagłówki</h3>
+                <h1 class="dawn-h1">Nagłówek 1 (dawn-h1)</h1>
+                <h2 class="dawn-h2">Nagłówek 2 (dawn-h2)</h2>
+                <h3 class="dawn-h3">Nagłówek 3 (dawn-h3)</h3>
+                <h4 class="dawn-h4">Nagłówek 4 (dawn-h4)</h4>
+                <h5 class="dawn-h5">Nagłówek 5 (dawn-h5)</h5>
+                <h6 class="dawn-h6">Nagłówek 6 (dawn-h6)</h6>
+            </div>
+            
+            <div class="dawn-mb-6">
+                <h3 class="dawn-h4 dawn-font-brand">Rozmiary tekstu</h3>
+                <p class="dawn-text-xs">dawn-text-xs: Mały tekst</p>
+                <p class="dawn-text-sm">dawn-text-sm: Drobny tekst</p>
+                <p class="dawn-text-base">dawn-text-base: Podstawowy rozmiar tekstu</p>
+                <p class="dawn-text-md">dawn-text-md: Średni tekst</p>
+                <p class="dawn-text-lg">dawn-text-lg: Duży tekst</p>
+                <p class="dawn-text-xl">dawn-text-xl: Bardzo duży tekst</p>
+                <p class="dawn-text-2xl">dawn-text-2xl: 2x duży tekst</p>
+            </div>
+            
+            <div>
+                <h3 class="dawn-h4 dawn-font-brand">Style specjalne</h3>
+                <p class="dawn-gradient-text dawn-text-2xl">Tekst z gradientem (dawn-gradient-text)</p>
+                <p>Tekst z <span class="dawn-highlight-text">podświetleniem</span> (dawn-highlight-text)</p>
+            </div>
+        </section>
+        
+        <!-- Buttons -->
+        <section id="buttons" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Przyciski</h2>
+            <p class="dawn-mb-5">Różne style przycisków dostępne w dawn-css.</p>
+            
+            <div class="dawn-flex dawn-flex-wrap dawn-gap-4 dawn-mb-6">
+                <button class="dawn-btn dawn-btn-primary">Podstawowy</button>
+                <button class="dawn-btn dawn-btn-outline">Konturowy</button>
+                <button class="dawn-btn dawn-btn-lavender">Lawendowy</button>
+            </div>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Rozmiary</h3>
+            <div class="dawn-flex dawn-flex-wrap dawn-gap-4 dawn-items-center">
+                <button class="dawn-btn dawn-btn-primary dawn-btn-sm">Mały</button>
+                <button class="dawn-btn dawn-btn-primary">Standardowy</button>
+                <button class="dawn-btn dawn-btn-primary dawn-btn-lg">Duży</button>
+            </div>
+            
+            <div class="code-block dawn-mt-5">
+&lt;button class="dawn-btn dawn-btn-primary"&gt;Podstawowy&lt;/button&gt;
+&lt;button class="dawn-btn dawn-btn-outline"&gt;Konturowy&lt;/button&gt;
+&lt;button class="dawn-btn dawn-btn-lavender"&gt;Lawendowy&lt;/button&gt;
+            </div>
+        </section>
+        
+        <!-- Cards -->
+        <section id="cards" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Karty</h2>
+            <p class="dawn-mb-5">Komponenty kart dla różnych typów zawartości.</p>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Standardowa karta</h3>
+            <div class="dawn-grid dawn-grid-cols-3 dawn-grid-md-cols-1 dawn-gap-4 dawn-mb-6">
+                <div class="dawn-card dawn-card-hover">
+                    <h4 class="dawn-h5">Karta podstawowa</h4>
+                    <p>Standardowa karta z efektem hover. Użyj klas dawn-card i dawn-card-hover.</p>
+                </div>
+                
+                <div class="dawn-card dawn-card-shadow dawn-card-hover">
+                    <h4 class="dawn-h5">Karta z cieniem</h4>
+                    <p>Karta z cieniem. Dodaj klasę dawn-card-shadow.</p>
+                </div>
+                
+                <div class="dawn-card dawn-card-centered dawn-card-hover">
+                    <h4 class="dawn-h5">Karta wycentrowana</h4>
+                    <p>Karta z wycentrowaną zawartością. Użyj dawn-card-centered.</p>
+                </div>
+            </div>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Karta z funkcją</h3>
+            <div class="dawn-feature-card dawn-mb-6">
+                <div class="dawn-feature-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <div class="dawn-feature-content">
+                    <h4>Generowanie bajek</h4>
+                    <p>Utwórz własną, unikalną bajkę dopasowaną do zainteresowań Twojego dziecka. Wystarczy, że wpiszesz imię dziecka i temat - AI stworzy wciągającą opowieść.</p>
+                </div>
+            </div>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Karta korzyści</h3>
+            <div class="dawn-grid dawn-grid-cols-3 dawn-grid-md-cols-1 dawn-gap-4 dawn-mb-6">
+                <div class="dawn-benefit-card">
+                    <div class="dawn-benefit-icon">👔</div>
+                    <h4>Gdy nie możesz być przy dziecku</h4>
+                    <p>Pracujesz do późna? Wyjeżdżasz służbowo? Twój głos zawsze będzie przy dziecku o porze snu.</p>
+                </div>
+                
+                <div class="dawn-benefit-card">
+                    <div class="dawn-benefit-icon">😴</div>
+                    <h4>Gdy jesteś zmęczony</h4>
+                    <p>Po ciężkim dniu trudno czytać z energią. Teraz możesz odpocząć.</p>
+                </div>
+                
+                <div class="dawn-benefit-card">
+                    <div class="dawn-benefit-icon">💡</div>
+                    <h4>Rozwój języka i wyobraźni</h4>
+                    <p>Regularne słuchanie bajek wspiera rozwój słownictwa i kreatywnego myślenia Twojego dziecka.</p>
+                </div>
+            </div>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Karta testimonial</h3>
+            <div class="dawn-grid dawn-grid-cols-2 dawn-grid-md-cols-1 dawn-gap-4">
+                <div class="dawn-testimonial-card">
+                    <div class="dawn-testimonial-text">
+                        Kiedy muszę pracować do późna, moja córka nadal zasypia słuchając bajki czytanej moim głosem. To niesamowite, jak technologia może pomóc w utrzymaniu naszej więzi mimo napięć czasowych.
+                    </div>
+                    <div class="dawn-testimonial-author">
+                        <div class="sample-avatar dawn-rounded-full">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="dawn-testimonial-author-info">
+                            <strong>Anna K.</strong>
+                            <span>Mama 5-latki, Kraków</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dawn-testimonial-card">
+                    <div class="dawn-testimonial-text">
+                        Jako tata, który często wyjeżdża służbowo, czułem się winny, że nie czytam dzieciom na dobranoc. Teraz, dzięki DawnoTemu, moje dzieci słyszą mój głos każdego wieczoru.
+                    </div>
+                    <div class="dawn-testimonial-author">
+                        <div class="sample-avatar dawn-rounded-full">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="dawn-testimonial-author-info">
+                            <strong>Tomek S.</strong>
+                            <span>Tata dwójki dzieci, Gdańsk</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Forms -->
+        <section id="forms" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Formularze</h2>
+            <p class="dawn-mb-5">Elementy formularzy i układy.</p>
+            
+            <div class="dawn-grid dawn-grid-cols-2 dawn-grid-md-cols-1 dawn-gap-6">
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Standardowy formularz</h3>
+                    <div class="dawn-form-group">
+                        <label for="name" class="dawn-label">Imię</label>
+                        <input type="text" id="name" class="dawn-input" placeholder="Wprowadź imię">
+                    </div>
+                    <div class="dawn-form-group">
+                        <label for="email" class="dawn-label">Email</label>
+                        <input type="email" id="email" class="dawn-input" placeholder="Wprowadź email">
+                    </div>
+                    <button class="dawn-btn dawn-btn-primary dawn-form-btn">Wyślij</button>
+                </div>
+                
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Formularz inline</h3>
+                    <form class="dawn-form-inline">
+                        <input type="email" class="dawn-input dawn-input-rounded" placeholder="Twój adres e-mail" required>
+                        <button type="submit" class="dawn-btn dawn-btn-primary">Zapisz się</button>
+                    </form>
+                    
+                    <div class="code-block dawn-mt-5">
+&lt;form class="dawn-form-inline"&gt;
+  &lt;input type="email" class="dawn-input dawn-input-rounded" placeholder="Twój adres e-mail"&gt;
+  &lt;button type="submit" class="dawn-btn dawn-btn-primary"&gt;Zapisz się&lt;/button&gt;
+&lt;/form&gt;
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Components -->
+        <section id="components" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Komponenty</h2>
+            <p class="dawn-mb-5">Dodatkowe komponenty interfejsu.</p>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Badge</h3>
+            <div class="dawn-flex dawn-gap-4 dawn-mb-6">
+                <div class="dawn-badge">
+                    <i class="fas fa-star"></i>
+                    Nowość
+                </div>
+                <div class="dawn-badge">
+                    <i class="fas fa-check"></i>
+                    Zatwierdzone
+                </div>
+                <div class="dawn-badge">
+                    <i class="fas fa-bolt"></i>
+                    Premium
+                </div>
+            </div>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Kroki</h3>
+            <div class="dawn-steps dawn-mb-6">
+                <div class="dawn-step">
+                    <div class="dawn-step-number">1</div>
+                    <div class="dawn-step-connection"></div>
+                    <div class="dawn-step-content">
+                        <h4>Nagraj próbkę swojego głosu</h4>
+                        <p>Wystarczy, że przeczytasz krótki fragment tekstu. To zajmie około 30 sekund!</p>
+                    </div>
+                </div>
+                
+                <div class="dawn-step">
+                    <div class="dawn-step-number">2</div>
+                    <div class="dawn-step-connection"></div>
+                    <div class="dawn-step-content">
+                        <h4>Wybierz bajkę z biblioteki</h4>
+                        <p>Znajdziesz klasyczne polskie baśnie, popularne opowieści i edukacyjne historie.</p>
+                    </div>
+                </div>
+                
+                <div class="dawn-step">
+                    <div class="dawn-step-number">3</div>
+                    <div class="dawn-step-content">
+                        <h4>Słuchaj bajki swoim głosem</h4>
+                        <p>Twoje dziecko usłyszy bajkę opowiadaną Twoim głosem - idealnie na czas snu lub podróży.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">FAQ</h3>
+            <div class="dawn-faq-container">
+                <div class="dawn-faq-item">
+                    <div class="dawn-faq-question">Czy to naprawdę będzie brzmiało jak mój głos?</div>
+                    <div class="dawn-faq-answer">
+                        <p>Tak! Używamy zaawansowanej technologii AI do klonowania Twojego głosu. Większość dzieci nie zauważa różnicy - dla nich to po prostu głos mamy czy taty opowiadający bajkę.</p>
+                    </div>
+                </div>
+                
+                <div class="dawn-faq-item">
+                    <div class="dawn-faq-question">Ile czasu zajmuje nagranie próbki głosu?</div>
+                    <div class="dawn-faq-answer">
+                        <p>Wystarczy około 3 minuty czytania przygotowanego tekstu. To jednorazowy proces - potem możesz korzystać z aplikacji bez ograniczeń.</p>
+                    </div>
+                </div>
+                
+                <div class="dawn-faq-item active">
+                    <div class="dawn-faq-question">Czy aplikacja zastępuje czytanie przez rodzica?</div>
+                    <div class="dawn-faq-answer">
+                        <p>Absolutnie nie! DawnoTemu to narzędzie, które wspiera rodziców, gdy nie mogą być obecni lub potrzebują odpoczynku. Zachęcamy do regularnego, osobistego czytania dzieciom, gdy tylko jest to możliwe.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Stats -->
+        <section id="stats" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Statystyki</h2>
+            
+            <div class="dawn-stats">
+                <div class="dawn-stat">
+                    <div class="dawn-stat-number">2500+</div>
+                    <div class="dawn-stat-label">Rodziców na liście</div>
+                </div>
+                <div class="dawn-stat">
+                    <div class="dawn-stat-number">92%</div>
+                    <div class="dawn-stat-label">Pozytywnych opinii</div>
+                </div>
+                <div class="dawn-stat">
+                    <div class="dawn-stat-number">14+</div>
+                    <div class="dawn-stat-label">Dostępnych języków</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Utilities -->
+        <section id="utilities" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Narzędzia</h2>
+            <p class="dawn-mb-5">Klasy użytkowe do szybkiego stylizowania elementów.</p>
+            
+            <div class="dawn-grid dawn-grid-cols-2 dawn-grid-md-cols-1 dawn-gap-6">
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Odstępy (Spacing)</h3>
+                    <div class="code-block">
+/* Margin (m) */
+.dawn-m-0 ... dawn-m-8
+.dawn-mt-0 ... dawn-mt-8 (top)
+.dawn-mb-0 ... dawn-mb-8 (bottom)
+.dawn-mx-auto (center horizontally)
+
+/* Padding (p) */
+.dawn-p-0 ... dawn-p-8
+.dawn-py-0 ... dawn-py-8 (top & bottom)
+.dawn-px-0 ... dawn-px-8 (left & right)
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Flex</h3>
+                    <div class="code-block">
+.dawn-flex
+.dawn-flex-col
+.dawn-flex-row
+.dawn-items-center
+.dawn-justify-center
+.dawn-justify-between
+.dawn-gap-1 ... dawn-gap-8
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Grid</h3>
+                    <div class="code-block">
+.dawn-grid
+.dawn-grid-cols-1 ... dawn-grid-cols-4
+.dawn-grid-cols-auto-fill
+.dawn-grid-md-cols-1 (responsive)
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Cienie i zaokrąglenia</h3>
+                    <div class="code-block">
+/* Shadows */
+.dawn-shadow-sm
+.dawn-shadow-md
+.dawn-shadow-lg
+
+/* Border radius */
+.dawn-rounded-sm
+.dawn-rounded-md
+.dawn-rounded-lg
+.dawn-rounded-pill
+.dawn-rounded-full
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Animation -->
+        <section id="animation" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">Animacje</h2>
+            <p class="dawn-mb-5">Wbudowane klasy animacji dla elementów interfejsu.</p>
+            
+            <div class="dawn-grid dawn-grid-cols-4 dawn-grid-md-cols-1 dawn-gap-4">
+                <div class="dawn-card dawn-card-centered dawn-card-hover">
+                    <div class="dawn-animate-float">
+                        <i class="fas fa-star dawn-text-3xl dawn-text-lavender"></i>
+                    </div>
+                    <h3 class="dawn-h5 dawn-mt-3">Float</h3>
+                    <p class="dawn-text-sm">.dawn-animate-float</p>
+                </div>
+                
+                <div class="dawn-card dawn-card-centered dawn-card-hover">
+                    <div class="dawn-animate-pulse">
+                        <i class="fas fa-heart dawn-text-3xl" style="color: var(--dawn-peach);"></i>
+                    </div>
+                    <h3 class="dawn-h5 dawn-mt-3">Pulse</h3>
+                    <p class="dawn-text-sm">.dawn-animate-pulse</p>
+                </div>
+                
+                <div class="dawn-card dawn-card-centered dawn-card-hover">
+                    <div class="dawn-animate-fade-in">
+                        <i class="fas fa-moon dawn-text-3xl" style="color: var(--dawn-lavender-dark);"></i>
+                    </div>
+                    <h3 class="dawn-h5 dawn-mt-3">Fade In</h3>
+                    <p class="dawn-text-sm">.dawn-animate-fade-in</p>
+                </div>
+                
+                <div class="dawn-card dawn-card-centered dawn-card-hover">
+                    <div class="dawn-animate-slide-up">
+                        <i class="fas fa-sun dawn-text-3xl" style="color: var(--dawn-yellow);"></i>
+                    </div>
+                    <h3 class="dawn-h5 dawn-mt-3">Slide Up</h3>
+                    <p class="dawn-text-sm">.dawn-animate-slide-up</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- JavaScript Helpers -->
+        <section id="javascript" class="showcase-section">
+            <h2 class="showcase-heading dawn-font-brand">JavaScript Helpers</h2>
+            <p class="dawn-mb-5">Dawn CSS zawiera pomocnicze funkcje JavaScript, które ułatwiają tworzenie interaktywnych elementów interfejsu.</p>
+
+            <div class="dawn-grid dawn-grid-cols-2 dawn-grid-md-cols-1 dawn-gap-6">
+                <!-- Notifications/Toasts -->
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Powiadomienia (Toasts)</h3>
+                    <p class="dawn-mb-3">Wyświetlaj użytkownikom nieinwazyjne powiadomienia za pomocą funkcji <code>Dawn.notify()</code>.</p>
+                    
+                    <div class="dawn-flex dawn-gap-2 dawn-mb-4">
+                        <button class="dawn-btn dawn-btn-sm notify-demo-btn" data-type="info" data-message="To jest powiadomienie informacyjne">
+                            Info
+                        </button>
+                        <button class="dawn-btn dawn-btn-sm notify-demo-btn" data-type="success" data-message="Operacja zakończona sukcesem!">
+                            Sukces
+                        </button>
+                        <button class="dawn-btn dawn-btn-sm notify-demo-btn" data-type="warning" data-message="Uwaga! Pamiętaj o zapisaniu zmian">
+                            Ostrzeżenie
+                        </button>
+                        <button class="dawn-btn dawn-btn-sm notify-demo-btn" data-type="error" data-message="Wystąpił błąd podczas przetwarzania">
+                            Błąd
+                        </button>
+                    </div>
+                    
+                    <div class="code-block">
+Dawn.notify('Treść powiadomienia', 'success', 3000);
+// Typy: 'info', 'success', 'warning', 'error'
+// Ostatni parametr to czas w ms
+                    </div>
+                </div>
+
+                <!-- Modals -->
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Okna modalne</h3>
+                    <p class="dawn-mb-3">Twórz okna modalne dla ważnych komunikatów, formularzy i dialogów za pomocą funkcji <code>Dawn.modal()</code>.</p>
+                    
+                    <button id="modal-demo-btn" class="dawn-btn dawn-btn-primary dawn-mb-4">
+                        Pokaż przykładowe okno modalne
+                    </button>
+                    
+                    <div class="code-block">
+Dawn.modal(
+  '&lt;p&gt;Treść okna modalnego&lt;/p&gt;', 
+  {
+    title: 'Tytuł okna',
+    closeButton: true,
+    width: '500px',
+    onOpen: function() { console.log('Modal opened'); },
+    onClose: function() { console.log('Modal closed'); }
+  }
+);
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Zakładki (Tabs)</h3>
+                    <p>System zakładek z automatyczną inicjalizacją za pomocą <code>Dawn.initTabs()</code>.</p>
+                    
+                    <div class="dawn-tabs">
+                        <div class="dawn-tab-buttons">
+                            <div class="dawn-tab active">Pierwsza zakładka</div>
+                            <div class="dawn-tab">Druga zakładka</div>
+                            <div class="dawn-tab">Trzecia zakładka</div>
+                        </div>
+                        
+                        <div class="dawn-tab-panel active">
+                            <p>Zawartość pierwszej zakładki. Zakładki umożliwiają organizację treści w ograniczonej przestrzeni.</p>
+                        </div>
+                        
+                        <div class="dawn-tab-panel">
+                            <p>Zawartość drugiej zakładki. Ta sekcja jest wyświetlana po kliknięciu odpowiedniej zakładki.</p>
+                        </div>
+                        
+                        <div class="dawn-tab-panel">
+                            <p>Zawartość trzeciej zakładki. System zakładek jest w pełni dostępny za pomocą klawiatury i czytników ekranu.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+&lt;div class="dawn-tabs"&gt;
+  &lt;div class="dawn-tab-buttons"&gt;
+    &lt;div class="dawn-tab active"&gt;Pierwsza zakładka&lt;/div&gt;
+    &lt;div class="dawn-tab"&gt;Druga zakładka&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="dawn-tab-panel active"&gt;Treść 1&lt;/div&gt;
+  &lt;div class="dawn-tab-panel"&gt;Treść 2&lt;/div&gt;
+&lt;/div&gt;
+
+// Inicjalizacja zakładek
+Dawn.initTabs();
+                    </div>
+                </div>
+
+                <!-- Accordions -->
+                <div>
+                    <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Akordeony</h3>
+                    <p>Komponenty akordeonowe przełączane za pomocą <code>Dawn.toggleAccordion()</code>.</p>
+                    
+                    <div class="dawn-accordion">
+                        <div class="dawn-accordion-item active">
+                            <div class="dawn-accordion-header">Sekcja 1: Podstawowe informacje</div>
+                            <div class="dawn-accordion-content">
+                                <div class="dawn-accordion-body">
+                                    <p>Akordeony są idealne do organizowania dużych ilości informacji w sposób, który nie przytłacza użytkownika.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dawn-accordion-item">
+                            <div class="dawn-accordion-header">Sekcja 2: Zaawansowane opcje</div>
+                            <div class="dawn-accordion-content">
+                                <div class="dawn-accordion-body">
+                                    <p>Możesz używać akordeonów do ukrywania zaawansowanych opcji, które nie są potrzebne większości użytkowników.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dawn-accordion-item">
+                            <div class="dawn-accordion-header">Sekcja 3: Dodatkowe informacje</div>
+                            <div class="dawn-accordion-content">
+                                <div class="dawn-accordion-body">
+                                    <p>W jednym momencie może być otwarty tylko jeden element akordeonu, co pomaga w skupieniu uwagi użytkownika.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block dawn-mt-4">
+&lt;div class="dawn-accordion-item"&gt;
+  &lt;div class="dawn-accordion-header"&gt;Tytuł&lt;/div&gt;
+  &lt;div class="dawn-accordion-content"&gt;
+    &lt;div class="dawn-accordion-body"&gt;Treść&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+// Przełączanie akordeonu
+element.addEventListener('click', function() {
+  Dawn.toggleAccordion(this);
+});
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Validation -->
+            <div class="dawn-mt-7">
+                <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Walidacja formularzy</h3>
+                <p class="dawn-mb-4">Dawn JS zawiera wbudowaną walidację formularzy, która aktywuje się dla formularzy z klasą <code>.dawn-form</code>.</p>
+                
+                <div class="dawn-grid dawn-grid-cols-2 dawn-grid-md-cols-1 dawn-gap-6">
+                    <div>
+                        <form class="dawn-form" novalidate>
+                            <div class="dawn-form-group">
+                                <label for="name-validation" class="dawn-label">Imię i nazwisko</label>
+                                <input type="text" id="name-validation" class="dawn-input" placeholder="Wprowadź imię i nazwisko" required>
+                            </div>
+                            <div class="dawn-form-group">
+                                <label for="email-validation" class="dawn-label">Email</label>
+                                <input type="email" id="email-validation" class="dawn-input" placeholder="Wprowadź email" required>
+                            </div>
+                            <button type="submit" class="dawn-btn dawn-btn-primary dawn-form-btn">Testuj walidację</button>
+                        </form>
+                    </div>
+                    
+                    <div>
+                        <div class="code-block dawn-h-full">
+// Walidacja uruchamia się automatycznie
+// dla formularzy z klasą .dawn-form
+
+Dawn.initFormValidation();
+
+// Sprawdza:
+// - Pola wymagane (required)
+// - Poprawność adresów email (type="email")
+// - Dodaje komunikaty błędów pod nieprawidłowymi polami
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Animations -->
+            <div class="dawn-mt-7">
+                <h3 class="dawn-h4 dawn-font-brand dawn-mb-4">Animacje podczas przewijania</h3>
+                <p class="dawn-mb-4">Dodaj klasę <code>.dawn-animate-on-scroll</code> do elementów, które mają być animowane podczas przewijania strony.</p>
+                
+                <div class="dawn-grid dawn-grid-cols-3 dawn-grid-md-cols-1 dawn-gap-4">
+                    <div class="dawn-card dawn-card-hover dawn-animate-on-scroll">
+                        <h4>Element 1</h4>
+                        <p>Ten element zostanie animowany podczas przewijania strony.</p>
+                    </div>
+                    
+                    <div class="dawn-card dawn-card-hover dawn-animate-on-scroll">
+                        <h4>Element 2</h4>
+                        <p>Ten element zostanie animowany z lekkim opóźnieniem.</p>
+                    </div>
+                    
+                    <div class="dawn-card dawn-card-hover dawn-animate-on-scroll">
+                        <h4>Element 3</h4>
+                        <p>Funkcja Dawn.initScrollAnimations() obsługuje wszystkie elementy z klasą .dawn-animate-on-scroll.</p>
+                    </div>
+                </div>
+                
+                <div class="code-block dawn-mt-4">
+&lt;div class="dawn-animate-on-scroll"&gt;
+  Zawartość elementu
+&lt;/div&gt;
+
+// Inicjalizacja animacji przewijania
+Dawn.initScrollAnimations();
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer class="dawn-footer">
+        <div class="dawn-container">
+            <div class="dawn-footer-content">
+                <div class="dawn-footer-logo-column">
+                    <div class="dawn-footer-logo">
+                        <img src="https://placehold.co/100x100/D4C1EC/FFFFFF.svg?text=DT" alt="DawnoTemu Logo">
+                        <h3 class="dawn-font-brand">DawnoTemu</h3>
+                    </div>
+                    <p class="dawn-footer-description">
+                        Innowacyjna aplikacja, która pomaga rodzicom utrzymać magię wieczornych bajek, nawet gdy życie staje się zbyt intensywne.
+                    </p>
+                    <div class="dawn-social-icons">
+                        <a href="#" class="dawn-social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="dawn-social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="dawn-social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="dawn-footer-column">
+                    <h5>Dokumentacja</h5>
+                    <ul class="dawn-footer-links">
+                        <li><a href="#colors">Kolory</a></li>
+                        <li><a href="#typography">Typografia</a></li>
+                        <li><a href="#buttons">Przyciski</a></li>
+                        <li><a href="#cards">Karty</a></li>
+                    </ul>
+                </div>
+                
+                <div class="dawn-footer-column">
+                    <h5>Komponenty</h5>
+                    <ul class="dawn-footer-links">
+                        <li><a href="#forms">Formularze</a></li>
+                        <li><a href="#components">Komponenty UI</a></li>
+                        <li><a href="#utilities">Narzędzia</a></li>
+                        <li><a href="#animation">Animacje</a></li>
+                    </ul>
+                </div>
+                
+                <div class="dawn-footer-column">
+                    <h5>Zasoby</h5>
+                    <ul class="dawn-footer-links">
+                        <li><a href="#">GitHub</a></li>
+                        <li><a href="#">Dokumentacja</a></li>
+                        <li><a href="#">Pobierz</a></li>
+                        <li><a href="#">Licencja</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="dawn-bottom-footer">
+                <div class="dawn-copyright">
+                    <img src="https://placehold.co/50x50/D4C1EC/FFFFFF.svg?text=DT" alt="DawnoTemu Logo">
+                    © 2025 DawnoTemu. Wszelkie prawa zastrzeżone.
+                </div>
+                <div class="dawn-bottom-links">
+                    <a href="#">Prywatność</a>
+                    <a href="#">Warunki</a>
+                    <a href="#">Kontakt</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="dawn.js"></script>
+    <script>
+        // Additional showcase-specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up notification demo buttons
+            const notifyButtons = document.querySelectorAll('.notify-demo-btn');
+            notifyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type') || 'info';
+                    const message = this.getAttribute('data-message') || 'This is a notification';
+                    Dawn.notify(message, type, 3000);
+                });
+            });
+            
+            // Set up modal demo button
+            const modalBtn = document.querySelector('#modal-demo-btn');
+            if (modalBtn) {
+                modalBtn.addEventListener('click', function() {
+                    Dawn.modal(`
+                        <div class="dawn-p-4">
+                            <p>This is a modal created using the Dawn.modal() helper function.</p>
+                            <p class="dawn-mt-4">Modals are perfect for important messages, forms, and dialogs.</p>
+                            <div class="dawn-flex dawn-justify-end dawn-mt-5">
+                                <button class="dawn-btn dawn-btn-primary" onclick="this.closest('.dawn-modal').querySelector('.dawn-modal-close').click()">
+                                    Close Modal
+                                </button>
+                            </div>
+                        </div>
+                    `, {
+                        title: 'Dawn Modal Demo',
+                        width: '500px'
+                    });
+                });
+            }
+
+            // Set up accordion demos that aren't using the .dawn-faq- classes
+            document.querySelectorAll('.dawn-accordion-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    Dawn.toggleAccordion(this);
+                });
+            });
+
+            // Initialize tabs
+            Dawn.initTabs();
+        });
+    </script>
+</body>
+</html>

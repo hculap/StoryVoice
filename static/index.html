@@ -20,7 +20,6 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     <link rel="mask-icon" href="/icons/favicon.svg" color="#D4C1EC">
 
-
     <!-- PWA/Safari Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1345,9 +1344,9 @@
         margin-top: 3rem;
         text-align: center;
         padding: 1.5rem;
-        background-color: rgba(212, 193, 236, 0.1);
+        background-color: var(--peach);
         border-radius: var(--radius-md);
-        color: var(--text-medium);
+        color: white;
         font-size: 0.9375rem;
         max-width: 800px;
         margin-left: auto;
@@ -1375,6 +1374,266 @@
         }
     }
 
+    /* Mobile-First Improvements for DawnoTemu Landing Page */
+
+/* ===== 1. Fix Form Button Layout ===== */
+/* Change the button position from absolute to static on mobile */
+@media (max-width: 480px) {
+    .waitlist-form,
+    .final-cta-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .waitlist-form button,
+    .final-cta-form button {
+        position: static;
+        width: 100%;
+        margin-top: 0.5rem;
+        padding: 0.875rem;
+    }
+    
+    .waitlist-form input,
+    .final-cta-form input {
+        width: 100%;
+        padding: 1rem;
+    }
+}
+
+/* ===== 2. Improve Content Spacing ===== */
+@media (max-width: 768px) {
+    /* General spacing adjustments */
+    .container {
+        padding: 0 1.25rem;
+    }
+    
+    /* Section padding adjustments */
+    .hero,
+    .about-section,
+    .benefits,
+    .features,
+    .how-it-works,
+    .testimonials,
+    .research,
+    .faq,
+    .final-cta {
+        padding: 4rem 0;
+    }
+    
+    /* Hero section spacing */
+    .hero {
+        padding-top: 7rem; /* Account for fixed header */
+    }
+    
+    /* Adjust vertical spacing between sections */
+    .section-title {
+        margin-bottom: 2.5rem;
+    }
+}
+
+/* ===== 3. Fix Grid Layouts ===== */
+/* Force single column on small screens */
+@media (max-width: 768px) {
+    .features-grid,
+    .testimonial-grid,
+    .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    /* Adjust card padding */
+    .benefit-card,
+    .feature-card,
+    .testimonial-card {
+        padding: 1.5rem;
+    }
+}
+
+/* ===== 4. Add Mobile Navigation ===== */
+/* Add responsive mobile menu */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+}
+
+.mobile-menu-toggle span {
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-dark);
+    border-radius: 3px;
+    transition: var(--transition);
+}
+
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 71px; /* Height of the header */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 71px);
+    background-color: var(--bg-white);
+    z-index: 99;
+    padding: 2rem;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.mobile-nav.active {
+    transform: translateX(0);
+}
+
+.mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.mobile-nav-links a {
+    color: var(--text-dark);
+    font-size: 1.25rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .header-content .cta-button {
+        display: none;
+    }
+    
+    .mobile-nav {
+        display: flex;
+    }
+}
+
+/* ===== 5. Improve Touch Targets ===== */
+@media (max-width: 768px) {
+    /* Increase tap area for interactive elements */
+    .faq-question {
+        padding: 1.25rem 1.5rem;
+        min-height: 60px; /* Minimum touch target height */
+    }
+    
+    /* Increase spacing between footer links */
+    .footer-links li {
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+    }
+    
+    /* Make social icons larger */
+    .social-icon {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+/* ===== 6. Improve Text Scaling ===== */
+@media (max-width: 768px) {
+    /* Adjust font sizes for readability */
+    .hero h2 {
+        font-size: 2.25rem;
+        line-height: 1.2;
+    }
+    
+    .section-title h3 {
+        font-size: 1.75rem;
+    }
+    
+    .narrative-heading {
+        font-size: 1.75rem;
+    }
+    
+    body {
+        font-size: 16px; /* Base font size for mobile */
+    }
+    
+    .hero p, 
+    .narrative-text,
+    .benefit-card p,
+    .feature-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+}
+
+/* ===== 7. Image Handling ===== */
+@media (max-width: 768px) {
+    /* Keep images within bounds */
+    .hero-image, 
+    .narrative-image, 
+    .research-image {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    /* Adjust image containers */
+    .app-mockup-container {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    
+    /* Handle feature app preview highlights */
+    .feature-highlight {
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+}
+
+/* ===== 8. Fix Bottom Footer Layout ===== */
+@media (max-width: 768px) {
+    .bottom-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .bottom-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .bottom-links a {
+        margin-left: 0;
+    }
+}
+
+/* ===== 9. Better Responsive Stats ===== */
+@media (max-width: 480px) {
+    .stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+}
+
+/* ===== 10. Fix Very Small Screens (320px) ===== */
+@media (max-width: 320px) {
+    .hero h2 {
+    font-size: 1.75rem;
+    }
+    
+    .logo h1 {
+        font-size: 1.25rem;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+}
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -1384,7 +1643,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <img src="/logo.png" alt="DawnoTemu Logo">
+                    <img src="/logo.png" alt="DawnoTemu Logo" loading="lazy" loading="lazy">
                     <h1 class="logo-font">DawnoTemu</h1>
                 </div>
                 <a href="#waitlist" class="cta-button">Dołącz do listy</a>
@@ -1392,7 +1651,7 @@
         </div>
     </header>
     
-    <section class="hero">
+    <section id="hero" class="hero">
         <div class="hero-gradient"></div>
         <div class="hero-gradient-2"></div>
         <div class="container">
@@ -1441,11 +1700,11 @@
     </section>
     
     <!-- New About/Narrative Section -->
-    <section class="about-section">
+    <section id="about-section" class="about-section">
         <div class="container">
             <div class="narrative-container">
                 <div class="narrative-image">
-                    <img src="/images/img1.jpg" alt="Rodzic czytający dziecku przed snem">
+                    <img src="/images/img1.jpg" alt="Rodzic czytający dziecku przed snem" loading="lazy">
                 </div>
                 
                 <div class="narrative-content">
@@ -1462,7 +1721,7 @@
                     </p>
                     
                     <div class="narrative-author">
-                        <img src="/images/avatar1.jpg" alt="Katarzyna N.">
+                        <img src="/images/avatar1.jpg" alt="Katarzyna N." loading="lazy">
                         <div class="narrative-author-info">
                             <strong>Katarzyna Nowak</strong>
                             <span>Założycielka DawnoTemu, mama Julii</span>
@@ -1473,7 +1732,7 @@
         </div>
     </section>
     
-    <section class="benefits">
+    <section id="benefits" class="benefits">
         <div class="subtle-pattern"></div>
         <div class="container">
             <div class="section-title">
@@ -1521,15 +1780,15 @@
         </div>
     </section>
     
-    <section class="app-preview">
+    <section id="app-preview" class="app-preview">
         <div class="container">
             <div class="app-mockup-container">
-                <img src="/images/img3.jpg" alt="Aplikacja DawnoTemu w akcji" class="app-mockup">
+                <img src="/images/img3.jpg" alt="Aplikacja DawnoTemu w akcji" class="app-mockup" loading="lazy">
             </div>
         </div>
     </section>
     
-    <section class="how-it-works">
+    <section id="how-it-works" class="how-it-works">
         <div class="narrow-container">
             <div class="section-title">
                 <h3 class="logo-font">Jak to działa?</h3>
@@ -1567,7 +1826,7 @@
     </section>
     
     <!-- New Features Section -->
-    <section class="features">
+    <section id="features" class="features">
         <div class="subtle-pattern"></div>
         <div class="container">
             <div class="section-title">
@@ -1638,7 +1897,7 @@
             </div>
             
             <div class="feature-app-preview">
-                <img src="/images/img4.png" alt="Interfejs aplikacji DawnoTemu">
+                <img src="/images/img4.png" alt="Interfejs aplikacji DawnoTemu" loading="lazy">
                 <div class="feature-highlight highlight-1">1</div>
                 <div class="feature-highlight highlight-2">2</div>
                 <div class="feature-highlight highlight-3">3</div>
@@ -1646,7 +1905,7 @@
         </div>
     </section>
     
-    <section class="testimonials">
+    <section id="testimonials"  class="testimonials">
         <div class="subtle-pattern"></div>
         <div class="container">
             <div class="section-title">
@@ -1660,7 +1919,7 @@
                         Kiedy muszę pracować do późna, moja córka nadal zasypia słuchając bajki czytanej moim głosem. To niesamowite, jak technologia może pomóc w utrzymaniu naszej więzi mimo napięć czasowych.
                     </div>
                     <div class="testimonial-author">
-                        <img src="/images/avatar2.jpg" alt="Anna K.">
+                        <img src="/images/avatar2.jpg" alt="Anna K." loading="lazy">
                         <div class="testimonial-author-info">
                             <strong>Anna K.</strong>
                             <span>Mama 5-latki, Kraków</span>
@@ -1673,7 +1932,7 @@
                         Jako tata, który często wyjeżdża służbowo, czułem się winny, że nie czytam dzieciom na dobranoc. Teraz, dzięki DawnoTemu, moje dzieci słyszą mój głos każdego wieczoru. To zrewolucjonizowało nasz wieczorny rytuał.
                     </div>
                     <div class="testimonial-author">
-                        <img src="/images/avatar3.jpg" alt="Tomek S.">
+                        <img src="/images/avatar3.jpg" alt="Tomek S." loading="lazy">
                         <div class="testimonial-author-info">
                             <strong>Tomek S.</strong>
                             <span>Tata dwójki dzieci, Gdańsk</span>
@@ -1686,7 +1945,7 @@
                         Czasami po długim dniu z trójką dzieci brakuje mi energii na ekspresyjne czytanie. DawnoTemu pozwala mi odpocząć, a jednocześnie dziecko słyszy moją wersję ulubionej bajki. To jak mieć supermoc bycia w dwóch miejscach naraz.
                     </div>
                     <div class="testimonial-author">
-                        <img src="/images/avatar4.jpg" alt="Marta W.">
+                        <img src="/images/avatar4.jpg" alt="Marta W." loading="lazy">
                         <div class="testimonial-author-info">
                             <strong>Marta W.</strong>
                             <span>Mama trojaczków, Wrocław</span>
@@ -1698,7 +1957,7 @@
     </section>
 
 
-    <section class="research">
+    <section id="research" class="research">
         <div class="subtle-pattern"></div>
         <div class="container">
             <div class="section-title">
@@ -1708,7 +1967,7 @@
             
             <div class="narrative-container">
                 <div class="research-image">
-                    <img src="/images/img5.png" alt="Dr Joanna Kowalska, psycholog dziecięcy">
+                    <img src="/images/img5.png" alt="Dr Joanna Kowalska, psycholog dziecięcy" loading="lazy">
                 </div>
                 
                 <div class="narrative-content">
@@ -1721,7 +1980,7 @@
                     </p>
                     
                     <div class="narrative-author">
-                        <img src="/images/avatar5.jpg" alt="Dr Joanna Kowalska">
+                        <img src="/images/avatar5.jpg" alt="Dr Joanna Kowalska" loading="lazy">
                         <div class="narrative-author-info">
                             <strong>Dr Joanna Kowalska</strong>
                             <span>Psycholog dziecięcy, wykładowca UAM</span>
@@ -1763,7 +2022,7 @@
         </div>
     </section>
 
-    <section class="final-cta">
+    <section id="final-cta" class="final-cta">
         <div class="wave-pattern"></div>
         <div class="container">
             <div class="final-cta-content">
@@ -1778,7 +2037,7 @@
         </div>
     </section>
     
-    <section class="faq">
+    <section id="faq" class="faq">
         <div class="container">
             <div class="section-title">
                 <h3 class="logo-font">Najczęściej zadawane pytania</h3>
@@ -1836,7 +2095,7 @@
             <div class="footer-content">
                 <div class="footer-logo-column">
                     <div class="footer-logo">
-                        <img src="/logo.png" alt="DawnoTemu Logo">
+                        <img src="/logo.png" alt="DawnoTemu Logo" loading="lazy">
                         <h3 class="logo-font">DawnoTemu</h3>
                     </div>
                     <p class="footer-description">
@@ -1891,7 +2150,7 @@
             
             <div class="bottom-footer">
                 <div class="copyright">
-                    <img src="/logo.png" alt="DawnoTemu Logo">
+                    <img src="/logo.png" alt="DawnoTemu Logo" loading="lazy">
                     © 2025 DawnoTemu. Wszelkie prawa zastrzeżone.
                 </div>
                 <div class="bottom-links">
@@ -1980,6 +2239,129 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Mobile Navigation Implementation
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Insert mobile menu toggle and container into the DOM
+    const headerContent = document.querySelector('.header-content');
+    
+    // Create mobile menu toggle button
+    const mobileMenuToggle = document.createElement('div');
+    mobileMenuToggle.className = 'mobile-menu-toggle';
+    mobileMenuToggle.innerHTML = `
+        <span></span>
+        <span></span>
+        <span></span>
+    `;
+    
+    // Add toggle button to header
+    headerContent.appendChild(mobileMenuToggle);
+    
+    // Create mobile navigation
+    const mobileNav = document.createElement('div');
+    mobileNav.className = 'mobile-nav';
+    mobileNav.innerHTML = `
+        <div class="mobile-nav-links">
+            <a href="#about">O DawnoTemu</a>
+            <a href="#benefits">Korzyści</a>
+            <a href="#how-it-works">Jak to działa</a>
+            <a href="#features">Funkcje</a>
+            <a href="#testimonials">Opinie</a>
+            <a href="#research">Badania</a>
+            <a href="#faq">FAQ</a>
+        </div>
+        <a href="#waitlist" class="cta-button">Dołącz do listy</a>
+    `;
+    
+    // Add mobile nav to document
+    document.body.appendChild(mobileNav);
+    
+    // 2. Toggle mobile menu functionality
+    mobileMenuToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        mobileNav.classList.toggle('active');
+        
+        // Toggle body scroll when menu is open
+        if (mobileNav.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        
+        // Animate hamburger to X
+        const spans = this.querySelectorAll('span');
+        if (this.classList.contains('active')) {
+            spans[0].style.transform = 'rotate(45deg) translate(5px, 6px)';
+            spans[1].style.opacity = '0';
+            spans[2].style.transform = 'rotate(-45deg) translate(5px, -6px)';
+        } else {
+            spans[0].style.transform = '';
+            spans[1].style.opacity = '1';
+            spans[2].style.transform = '';
+        }
+    });
+    
+    // 3. Close mobile menu when clicking a link
+    const mobileNavLinks = mobileNav.querySelectorAll('a');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            mobileNav.classList.remove('active');
+            mobileMenuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Reset hamburger icon
+            const spans = mobileMenuToggle.querySelectorAll('span');
+            spans[0].style.transform = '';
+            spans[1].style.opacity = '1';
+            spans[2].style.transform = '';
+        });
+    });
+    
+    // 4. Handle resize events (close menu if window is resized larger)
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileNav.classList.contains('active')) {
+            mobileNav.classList.remove('active');
+            mobileMenuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Reset hamburger icon
+            const spans = mobileMenuToggle.querySelectorAll('span');
+            spans[0].style.transform = '';
+            spans[1].style.opacity = '1';
+            spans[2].style.transform = '';
+        }
+    });
+    
+    // 5. Improve FAQ functionality for mobile
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        
+        // Set initial height for animation
+        if (item.classList.contains('active')) {
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+        
+        // Expand answer with better touch response
+        question.addEventListener('click', function() {
+            const isActive = item.classList.contains('active');
+            
+            // Close all items
+            faqItems.forEach(faqItem => {
+                faqItem.classList.remove('active');
+                faqItem.querySelector('.faq-answer').style.maxHeight = null;
+            });
+            
+            // Toggle current item
+            if (!isActive) {
+                item.classList.add('active');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+            }
+        });
+    });
+});
     </script>
 </body>
 </html>
